@@ -6,7 +6,7 @@ function eventPointListTemplate() {
   `;
 }
 
-export default class PointListView {
+export default class EventPointListView {
   getTemplate() {
     return eventPointListTemplate();
   }

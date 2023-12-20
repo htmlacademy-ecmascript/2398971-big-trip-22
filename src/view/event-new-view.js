@@ -165,7 +165,7 @@ function createNewEventTemplate() {
 </li>`;
 }
 
-export default class NewEventView {
+export default class EventNewView {
   getTemplate() {
     return createNewEventTemplate();
   }
