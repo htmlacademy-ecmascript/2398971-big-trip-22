@@ -1,4 +1,4 @@
-import { render } from '../framework/render.js';
+import { render, replace } from '../framework/render.js';
 import EventPointListView from '../view/event-list-view.js';
 import SortingView from '../view/sorting-view.js';
 import EventPointView from '../view/event-point-view.js';
@@ -28,29 +28,59 @@ export default class TripPresenter {
     render(new SortingView(), this.#pointContainer);
     render(this.#eventListComponent, this.#pointContainer);
 
-    //render(new EventNewView(), this.#eventListComponent.element);
-
-    // render(new EditingEventView({
-    //   eventPoint: this.#pointsModel[0],
-    //   eventOffers: this.#offersModel.getOfferByType(this.#pointsModel[0].type),
-    //   eventDestination: this.#destinationsModel.getDestinationById(this.#pointsModel[0].destination),
-    //   allOffers: this.#allOffers,
-    //   allDestinations: this.#allDestinations,
-    // }),
-    // this.#eventListComponent.element);
-
-
     for (let i = 0; i < this.#pointsModel.length; i++) {
       this.#renderEventPoint({
         eventPoint: this.#pointsModel[i],
         eventOffers: this.#offersModel.getOfferById(this.#pointsModel[i].type , this.#pointsModel[i].offers),
         eventDestination: this.#destinationsModel.getDestinationById(this.#pointsModel[i].destination),
+        allOffers: this.#allOffers,
+        allDestinations: this.#allDestinations
       });
     }
   }
 
-  #renderEventPoint({eventPoint, eventOffers, eventDestination }) {
-    const eventPointComponent = new EventPointView({eventPoint, eventOffers, eventDestination});
+  #renderEventPoint({eventPoint, eventOffers, eventDestination, allOffers, allDestinations}) {
+    const escKeyDownHandler = (evt) => {
+      if (evt.key === 'Escape') {
+        evt.preventDefault();
+        replaceFormToPoint();
+        document.removeEventListener('keydown', escKeyDownHandler);
+      }
+    };
+
+    const eventPointComponent = new EventPointView({
+      eventPoint,
+      eventOffers,
+      eventDestination,
+      onEditClick: () => {
+        replacePointToForm();
+        document.addEventListener('keydown', escKeyDownHandler);
+      }
+    });
+
+    const eventEditComponent = new EditingEventView({
+      eventPoint,
+      eventOffers,
+      eventDestination,
+      allOffers,
+      allDestinations,
+      onEditClick: () => {
+        replaceFormToPoint();
+        document.removeEventListener('keydown', escKeyDownHandler);
+      },
+      onFormSubmit: () => {
+        replaceFormToPoint();
+        document.removeEventListener('keydown', escKeyDownHandler);
+      }
+    });
+
+    function replacePointToForm() {
+      replace(eventEditComponent, eventPointComponent);
+    }
+
+    function replaceFormToPoint() {
+      replace(eventPointComponent, eventEditComponent);
+    }
 
     render(eventPointComponent, this.#eventListComponent.element);
   }
