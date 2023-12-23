@@ -6,40 +6,47 @@ import EditingEventView from '../view/event-editing-view.js';
 //import EventNewView from '../view/event-new-view.js';
 
 export default class TripPresenter {
-  eventListComponent = new EventPointListView();
+  #pointContainer = null;
+  #pointsModel = null;
+  #offersModel = null;
+  #destinationsModel = null;
+  #allOffers = null;
+  #allDestinations = null;
+
+  #eventListComponent = new EventPointListView();
 
   constructor({pointContainer, pointsModel, offersModel, destinationsModel}) {
-    this.pointContainer = pointContainer;
-    this.pointsModel = pointsModel.getPoints();
-    this.offersModel = offersModel;
-    this.destinationsModel = destinationsModel;
-    this.allOffers = this.offersModel.getOffers();
-    this.allDestinations = this.destinationsModel.getDestinations();
+    this.#pointContainer = pointContainer;
+    this.#pointsModel = pointsModel.points;
+    this.#offersModel = offersModel;
+    this.#destinationsModel = destinationsModel;
+    this.#allOffers = this.#offersModel.offers;
+    this.#allDestinations = this.#destinationsModel.destinations;
   }
 
   init() {
-    render(new SortingView(), this.pointContainer);
-    render(this.eventListComponent, this.pointContainer);
+    render(new SortingView(), this.#pointContainer);
+    render(this.#eventListComponent, this.#pointContainer);
 
-    //render(new EventNewView(), this.eventListComponent.getElement());
+    //render(new EventNewView(), this.#eventListComponent.element);
 
     render(new EditingEventView({
-      eventPoint: this.pointsModel[0],
-      eventOffers: this.offersModel.getOfferByType(this.pointsModel[0].type),
-      eventDestination: this.destinationsModel.getDestinationById(this.pointsModel[0].destination),
-      allOffers: this.allOffers,
-      allDestinations: this.allDestinations,
+      eventPoint: this.#pointsModel[0],
+      eventOffers: this.#offersModel.getOfferByType(this.#pointsModel[0].type),
+      eventDestination: this.#destinationsModel.getDestinationById(this.#pointsModel[0].destination),
+      allOffers: this.#allOffers,
+      allDestinations: this.#allDestinations,
     }),
-    this.eventListComponent.element);
+    this.#eventListComponent.element);
 
 
-    for (let i = 1; i < this.pointsModel.length; i++) {
+    for (let i = 1; i < this.#pointsModel.length; i++) {
       render(new EventPointView({
-        eventPoint: this.pointsModel[i],
-        eventOffers: this.offersModel.getOfferById(this.pointsModel[i].type , this.pointsModel[i].offers),
-        eventDestination: this.destinationsModel.getDestinationById(this.pointsModel[i].destination),
+        eventPoint: this.#pointsModel[i],
+        eventOffers: this.#offersModel.getOfferById(this.#pointsModel[i].type , this.#pointsModel[i].offers),
+        eventDestination: this.#destinationsModel.getDestinationById(this.#pointsModel[i].destination),
       }),
-      this.eventListComponent.element);
+      this.#eventListComponent.element);
     }
   }
 }
