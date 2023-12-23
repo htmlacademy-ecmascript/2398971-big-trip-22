@@ -25,21 +25,10 @@ export default class TripPresenter {
   }
 
   init() {
-    render(new SortingView(), this.#pointContainer);
-    render(this.#eventListComponent, this.#pointContainer);
-
-    for (let i = 0; i < this.#pointsModel.length; i++) {
-      this.#renderEventPoint({
-        eventPoint: this.#pointsModel[i],
-        eventOffers: this.#offersModel.getOfferById(this.#pointsModel[i].type , this.#pointsModel[i].offers),
-        eventDestination: this.#destinationsModel.getDestinationById(this.#pointsModel[i].destination),
-        allOffers: this.#allOffers,
-        allDestinations: this.#allDestinations
-      });
-    }
+    this.#renderPointSection();
   }
 
-  #renderEventPoint({eventPoint, eventOffers, eventDestination, allOffers, allDestinations}) {
+  #renderEventPoints({eventPoint, eventOffers, eventDestination, allOffers, allDestinations}) {
     const escKeyDownHandler = (evt) => {
       if (evt.key === 'Escape') {
         evt.preventDefault();
@@ -84,4 +73,20 @@ export default class TripPresenter {
 
     render(eventPointComponent, this.#eventListComponent.element);
   }
+
+  #renderPointSection () {
+    render(new SortingView(), this.#pointContainer);
+    render(this.#eventListComponent, this.#pointContainer);
+
+    for (let i = 0; i < this.#pointsModel.length; i++) {
+      this.#renderEventPoints({
+        eventPoint: this.#pointsModel[i],
+        eventOffers: this.#offersModel.getOfferById(this.#pointsModel[i].type , this.#pointsModel[i].offers),
+        eventDestination: this.#destinationsModel.getDestinationById(this.#pointsModel[i].destination),
+        allOffers: this.#allOffers,
+        allDestinations: this.#allDestinations
+      });
+    }
+  }
+
 }
