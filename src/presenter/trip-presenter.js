@@ -1,4 +1,4 @@
-import {render} from '../render.js';
+import { render } from '../framework/render.js';
 import EventPointListView from '../view/event-list-view.js';
 import SortingView from '../view/sorting-view.js';
 import EventPointView from '../view/event-point-view.js';
@@ -30,7 +30,7 @@ export default class TripPresenter {
       allOffers: this.allOffers,
       allDestinations: this.allDestinations,
     }),
-    this.eventListComponent.getElement());
+    this.eventListComponent.element);
 
 
     for (let i = 1; i < this.pointsModel.length; i++) {
@@ -39,7 +39,7 @@ export default class TripPresenter {
         eventOffers: this.offersModel.getOfferById(this.pointsModel[i].type , this.pointsModel[i].offers),
         eventDestination: this.destinationsModel.getDestinationById(this.pointsModel[i].destination),
       }),
-      this.eventListComponent.getElement());
+      this.eventListComponent.element);
     }
   }
 }

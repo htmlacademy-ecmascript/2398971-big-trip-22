@@ -1,4 +1,4 @@
-import { createElement } from '../render.js';
+import AbstractView from '../framework/view/abstract-view.js';
 import { humanizeTaskDueDate } from '../utils.js';
 import { DATE_FORMAT } from '../const.js';
 
@@ -139,34 +139,29 @@ function createEditingEventTemplate({eventPoint, eventOffers, eventDestination, 
 </li>`;
 }
 
-export default class EditingEventView {
+export default class EditingEventView extends AbstractView {
+  #eventPoint = null;
+  #eventOffers = null;
+  #eventDestination = null;
+  #allOffers = null;
+  #allDestinations = null;
+
   constructor({eventPoint, eventOffers, eventDestination, allOffers, allDestinations}) {
-    this.eventPoint = eventPoint;
-    this.eventOffers = eventOffers;
-    this.eventDestination = eventDestination;
-    this.allOffers = allOffers;
-    this.allDestinations = allDestinations;
+    super();
+    this.#eventPoint = eventPoint;
+    this.#eventOffers = eventOffers;
+    this.#eventDestination = eventDestination;
+    this.#allOffers = allOffers;
+    this.#allDestinations = allDestinations;
   }
 
-  getTemplate() {
+  get template() {
     return createEditingEventTemplate({
-      eventPoint: this.eventPoint,
-      eventOffers: this.eventOffers,
-      eventDestination: this.eventDestination,
-      allOffers: this.allOffers,
-      allDestinations: this.allDestinations
+      eventPoint: this.#eventPoint,
+      eventOffers: this.#eventOffers,
+      eventDestination: this.#eventDestination,
+      allOffers: this.#allOffers,
+      allDestinations: this.#allDestinations
     });
-  }
-
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
-    }
-
-    return this.element;
-  }
-
-  removeElement() {
-    this.element = null;
   }
 }
