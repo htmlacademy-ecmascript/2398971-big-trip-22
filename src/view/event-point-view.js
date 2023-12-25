@@ -1,4 +1,4 @@
-import { createElement } from '../render.js';
+import AbstractView from '../framework/view/abstract-view.js';
 import { humanizeTaskDueDate, returnDateDuration } from '../utils.js';
 import { DATE_FORMAT } from '../const.js';
 
@@ -74,30 +74,32 @@ function createPointTemplate({point, offers, destination}) {
   </li>`;
 }
 
-export default class EventPointView {
-  constructor({eventPoint, eventOffers, eventDestination}) {
-    this.eventPoint = eventPoint;
-    this.eventOffers = eventOffers;
-    this.eventDestination = eventDestination;
+export default class EventPointView extends AbstractView {
+  #eventPoint = null;
+  #eventOffers = null;
+  #eventDestination = null;
+  #handleEditClick = null;
+
+  constructor({eventPoint, eventOffers, eventDestination, onEditClick}) {
+    super();
+    this.#eventPoint = eventPoint;
+    this.#eventOffers = eventOffers;
+    this.#eventDestination = eventDestination;
+    this.#handleEditClick = onEditClick;
+
+    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#openEditClickHandler);
   }
 
-  getTemplate() {
+  get template() {
     return createPointTemplate({
-      point: this.eventPoint,
-      offers: this.eventOffers,
-      destination: this.eventDestination
+      point: this.#eventPoint,
+      offers: this.#eventOffers,
+      destination: this.#eventDestination
     });
   }
 
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
-    }
-
-    return this.element;
-  }
-
-  removeElement() {
-    this.element = null;
-  }
+  #openEditClickHandler = (evt) => {
+    evt.preventDefault();
+    this.#handleEditClick();
+  };
 }

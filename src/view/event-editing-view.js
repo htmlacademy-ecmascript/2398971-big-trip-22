@@ -1,4 +1,4 @@
-import { createElement } from '../render.js';
+import AbstractView from '../framework/view/abstract-view.js';
 import { humanizeTaskDueDate } from '../utils.js';
 import { DATE_FORMAT } from '../const.js';
 
@@ -64,7 +64,9 @@ function createHeaderEventPrice (eventPoint) {
     </div>`;
 }
 
-function createSectionOffers (eventPoint, eventOffers) {
+function createSectionOffers (eventPoint, allOffers) {
+
+  const eventOffers = allOffers.find((element)=> element.type === eventPoint.type);
 
   return `
     <section class="event__section  event__section--offers">
@@ -117,19 +119,19 @@ function createHeaderEditingEventTemplate (eventPoint, allOffers , eventDestinat
     </header>`;
 }
 
-function createSectionEditingEventTemplate (eventPoint, eventOffers, eventDestination) {
+function createSectionEditingEventTemplate (eventPoint, eventDestination, allOffers) {
 
   return `
     <section class="event__details">
-      ${createSectionOffers(eventPoint, eventOffers)}
+      ${createSectionOffers(eventPoint, allOffers)}
       ${createSectionDestination(eventDestination)}
   </section>`;
 }
 
-function createEditingEventTemplate({eventPoint, eventOffers, eventDestination, allOffers, allDestinations}) {
+function createEditingEventTemplate({eventPoint, eventDestination, allOffers, allDestinations}) {
 
   const headerEditingEventTemplate = createHeaderEditingEventTemplate(eventPoint, allOffers, eventDestination, allDestinations);
-  const SectionEditingEventTemplate = createSectionEditingEventTemplate(eventPoint, eventOffers, eventDestination);
+  const SectionEditingEventTemplate = createSectionEditingEventTemplate(eventPoint, eventDestination, allOffers);
 
   return `<li class="trip-events__item">
   <form class="event event--edit" action="#" method="post">
@@ -139,34 +141,46 @@ function createEditingEventTemplate({eventPoint, eventOffers, eventDestination, 
 </li>`;
 }
 
-export default class EditingEventView {
-  constructor({eventPoint, eventOffers, eventDestination, allOffers, allDestinations}) {
-    this.eventPoint = eventPoint;
-    this.eventOffers = eventOffers;
-    this.eventDestination = eventDestination;
-    this.allOffers = allOffers;
-    this.allDestinations = allDestinations;
+export default class EditingEventView extends AbstractView {
+  #eventPoint = null;
+  #eventOffers = null;
+  #eventDestination = null;
+  #allOffers = null;
+  #allDestinations = null;
+  #handleEditClick = null;
+  #handleFormSubmit = null;
+
+  constructor({eventPoint, eventOffers, eventDestination, allOffers, allDestinations, onEditClick, onFormSubmit}) {
+    super();
+    this.#eventPoint = eventPoint;
+    this.#eventOffers = eventOffers;
+    this.#eventDestination = eventDestination;
+    this.#allOffers = allOffers;
+    this.#allDestinations = allDestinations;
+    this.#handleFormSubmit = onFormSubmit;
+    this.#handleEditClick = onEditClick;
+
+    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#closeEditClickHandler);
+    this.element.querySelector('form').addEventListener('submit', this.#formSubmitHandler);
   }
 
-  getTemplate() {
+  get template() {
     return createEditingEventTemplate({
-      eventPoint: this.eventPoint,
-      eventOffers: this.eventOffers,
-      eventDestination: this.eventDestination,
-      allOffers: this.allOffers,
-      allDestinations: this.allDestinations
+      eventPoint: this.#eventPoint,
+      eventOffers: this.#eventOffers,
+      eventDestination: this.#eventDestination,
+      allOffers: this.#allOffers,
+      allDestinations: this.#allDestinations
     });
   }
 
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
-    }
+  #closeEditClickHandler = (evt) => {
+    evt.preventDefault();
+    this.#handleEditClick();
+  };
 
-    return this.element;
-  }
-
-  removeElement() {
-    this.element = null;
-  }
+  #formSubmitHandler = (evt) => {
+    evt.preventDefault();
+    this.#handleFormSubmit();
+  };
 }
