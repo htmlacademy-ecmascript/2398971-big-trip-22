@@ -1,4 +1,4 @@
-import {createRandomRangeGeneratorNoRepetitions} from '../utils.js';
+import {createRandomRangeGeneratorNoRepetitions} from '../utils/common.js';
 import {POINT_TYPES, OFFERS} from '../const.js';
 
 const randomOffersCount = createRandomRangeGeneratorNoRepetitions (0, OFFERS.length - 1);

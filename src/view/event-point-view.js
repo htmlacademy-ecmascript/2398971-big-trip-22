@@ -1,5 +1,5 @@
 import AbstractView from '../framework/view/abstract-view.js';
-import { humanizeTaskDueDate, returnDateDuration } from '../utils.js';
+import { humanizeTaskDueDate, returnDateDuration } from '../utils/point.js';
 import { DATE_FORMAT } from '../const.js';
 
 function createSelectedOffersTemplate(selectedOffers) {

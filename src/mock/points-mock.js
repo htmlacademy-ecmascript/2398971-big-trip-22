@@ -1,4 +1,4 @@
-import { getRandomInteger, getRandomArrayElement, createRandomRangeGeneratorNoRepetitions} from '../utils.js';
+import { getRandomInteger, getRandomArrayElement, createRandomRangeGeneratorNoRepetitions} from '../utils/common.js';
 import { mockDestinations } from '../mock/destinations-mock.js';
 import { mockOffers } from '../mock/offers-mock.js';
 import { POINT_MAX_PRICE, POINTS__MAX_COUNT, DURATIONS } from '../const.js';
