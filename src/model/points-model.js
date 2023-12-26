@@ -1,9 +1,7 @@
-import { getRandomPoint } from '../mock/points-mock.js';
-import { POINTS__MAX_COUNT } from '../const.js';
-
+import { pointsMock } from '../mock/points-mock.js';
 
 export default class PointsModel {
-  #points = Array.from({length: POINTS__MAX_COUNT}, () => getRandomPoint());
+  #points = pointsMock;
 
   get points() {
     return this.#points;
