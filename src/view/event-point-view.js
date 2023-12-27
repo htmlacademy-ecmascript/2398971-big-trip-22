@@ -1,5 +1,5 @@
 import AbstractView from '../framework/view/abstract-view.js';
-import { humanizeTaskDueDate, returnDateDuration } from '../utils/point.js';
+import { humanizeTaskDueDate, returnDateDurationFormat } from '../utils/point.js';
 import { DATE_FORMAT } from '../const.js';
 
 function createSelectedOffersTemplate(selectedOffers) {
@@ -33,7 +33,7 @@ function createEventSchedule (dateFrom, dateTo) {
     &mdash;
     <time class="event__end-time" datetime="2019-03-18T11:00">${humanizeTaskDueDate(dateTo,DATE_FORMAT.time)}</time>
   </p>
-  <p class="event__duration">${returnDateDuration (dateFrom, dateTo)}M</p>
+  <p class="event__duration">${returnDateDurationFormat (dateFrom, dateTo)}M</p>
 </div>`;
 }
 

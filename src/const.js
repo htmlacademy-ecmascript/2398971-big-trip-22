@@ -46,6 +46,21 @@ const NO_POINT_MASSAGES = {
   future: 'There are no future events now'
 };
 
+const FilterType = {
+  EVERYTHING: 'everthing',
+  PAST: 'past',
+  PRESENT: 'present',
+  FUTURE: 'future'
+};
+
+const SortingType = {
+  DAY: 'day',
+  EVENT: 'event',
+  TIME: 'time',
+  PRICE: 'price',
+  OFFERS: 'offers'
+};
+
 export {
   POINT_TYPES,
   DESTINATIONS,
@@ -57,7 +72,9 @@ export {
   POINT_MAX_PRICE,
   POINTS__MAX_COUNT,
   PICTURE_MAX,
-  NO_POINT_MASSAGES
+  NO_POINT_MASSAGES,
+  FilterType,
+  SortingType
 };
 
 

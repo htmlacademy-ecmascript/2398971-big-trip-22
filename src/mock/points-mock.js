@@ -1,4 +1,4 @@
-import { getRandomInteger, createRandomRangeGeneratorNoRepetitions} from '../utils/common.js';
+import { getRandomInteger, createRandomRangeGeneratorNoRepetitions, getRandomArrayElement} from '../utils/common.js';
 import { mockDestinations } from '../mock/destinations-mock.js';
 import { mockOffers } from '../mock/offers-mock.js';
 import { POINT_MAX_PRICE, POINTS__MAX_COUNT, DURATIONS } from '../const.js';
@@ -68,8 +68,8 @@ const generatePoint = (idPoint) => {
 
 const pointsMock = Array.from({length : POINTS__MAX_COUNT},(_,index) => generatePoint(index + 1));
 
-// function getRandomPoint() {
-//   return getRandomArrayElement(pointsMock);
-// }
+function getRandomPoint() {
+  return getRandomArrayElement(pointsMock);
+}
 
-export {pointsMock};
+export {getRandomPoint};

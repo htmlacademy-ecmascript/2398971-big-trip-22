@@ -1,5 +1,6 @@
 import dayjs from 'dayjs';
 import duration from 'dayjs/plugin/duration';
+import moment from 'moment';
 import { MILISECONDS } from '../const';
 
 function humanizeTaskDueDate(dueDate, format) {
@@ -7,9 +8,13 @@ function humanizeTaskDueDate(dueDate, format) {
 }
 
 function returnDateDuration (dateFrom, dateTo) {
+  return dayjs(dateTo).diff(dayjs(dateFrom));
+}
+
+function returnDateDurationFormat (dateFrom, dateTo) {
   dayjs.extend(duration);
 
-  const timeDuration = dayjs(dateTo).diff(dayjs(dateFrom));
+  const timeDuration = returnDateDuration (dateFrom, dateTo);
 
   if (timeDuration < MILISECONDS.oneHour) {
     return dayjs.duration(timeDuration).format('mm[M]');
@@ -22,7 +27,29 @@ function returnDateDuration (dateFrom, dateTo) {
   }
 }
 
+function isPointFuture(dateFrom) {
+  moment().format();
+
+  return dayjs().isBefore(dateFrom, 'day');
+}
+
+function isPointPresent(dateFrom, dateTo) {
+  moment().format();
+
+  return !isPointFuture(dateFrom) && !isPointPast(dateTo);
+}
+
+function isPointPast(dateTo) {
+  moment().format();
+
+  return dayjs().isAfter(dateTo, 'day');
+}
+
 export {
   humanizeTaskDueDate,
-  returnDateDuration
+  returnDateDuration,
+  returnDateDurationFormat,
+  isPointFuture,
+  isPointPresent,
+  isPointPast
 };
