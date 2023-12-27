@@ -9,7 +9,3 @@ const filter = {
 };
 
 export {filter};
-
-// console.log(`Будущее ${dateFrom} // ${isPointFuture (dateFrom)}`);
-// console.log(`Настоящее ${dateFrom} ${dateTo}  // ${isPointPresent (dateFrom, dateTo)}`);
-// console.log(`Прошлое ${dateTo} // ${isPointPast (dateTo)}`);

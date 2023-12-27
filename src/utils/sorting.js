@@ -11,5 +11,3 @@ const sorting = {
 };
 
 export {sorting};
-
-//points.sort((a, b) => b - a);

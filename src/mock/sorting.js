@@ -4,7 +4,7 @@ function generateSorting(points) {
   return Object.entries(sorting).map(
     ([sortingType, sortingPoints]) => ({
       type: sortingType,
-      count: sortingPoints(points).length,
+      disable: !Array.isArray(sortingPoints(points)),
     }),
   );
 }

@@ -1,15 +1,23 @@
 import AbstractView from '../framework/view/abstract-view.js';
 
-function createNoPointTemplate() {
+function createNoPointTemplate(massage) {
   return (
     `<p class="trip-events__msg">
-      Failed to load latest route information
+      ${massage};
     </p>`
   );
 }
 
 export default class NoPointView extends AbstractView {
+  #massage = null;
+
+  constructor({massage}) {
+    super();
+    this.#massage = massage;
+  }
+
+
   get template() {
-    return createNoPointTemplate();
+    return createNoPointTemplate(this.#massage);
   }
 }
