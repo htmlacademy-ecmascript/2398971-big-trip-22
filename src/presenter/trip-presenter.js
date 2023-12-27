@@ -4,6 +4,7 @@ import SortingView from '../view/sorting-view.js';
 import EventPointView from '../view/event-point-view.js';
 import EditingEventView from '../view/event-editing-view.js';
 //import EventNewView from '../view/event-new-view.js';
+import { generateSorting } from '../mock/sorting.js';
 
 export default class TripPresenter {
   #pointContainer = null;
@@ -75,7 +76,7 @@ export default class TripPresenter {
   }
 
   #renderPointSection () {
-    render(new SortingView(), this.#pointContainer);
+    render(new SortingView({generateSorting}), this.#pointContainer);
     render(this.#eventListComponent, this.#pointContainer);
 
     for (let i = 0; i < this.#pointsModel.length; i++) {
