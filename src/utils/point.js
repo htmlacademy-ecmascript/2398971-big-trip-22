@@ -1,6 +1,5 @@
 import dayjs from 'dayjs';
 import duration from 'dayjs/plugin/duration';
-import moment from 'moment';
 import { MILISECONDS } from '../const';
 
 function humanizeTaskDueDate(dueDate, format) {
@@ -28,19 +27,16 @@ function returnDateDurationFormat (dateFrom, dateTo) {
 }
 
 function isPointFuture(dateFrom) {
-  moment().format();
 
   return dayjs().isBefore(dateFrom, 'day');
 }
 
 function isPointPresent(dateFrom, dateTo) {
-  moment().format();
 
   return !isPointFuture(dateFrom) && !isPointPast(dateTo);
 }
 
 function isPointPast(dateTo) {
-  moment().format();
 
   return dayjs().isAfter(dateTo, 'day');
 }
