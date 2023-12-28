@@ -47,7 +47,7 @@ const NO_POINT_MASSAGES = {
 };
 
 const FilterType = {
-  EVERYTHING: 'everthing',
+  EVERYTHING: 'everything',
   PAST: 'past',
   PRESENT: 'present',
   FUTURE: 'future'

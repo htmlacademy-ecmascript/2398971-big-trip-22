@@ -4,9 +4,13 @@ import SortingView from '../view/sorting-view.js';
 import EventPointView from '../view/event-point-view.js';
 import EditingEventView from '../view/event-editing-view.js';
 import NoPointView from '../view/no-point-view.js';
+import TripInfoView from '../view/trip-info-view.js';
 //import EventNewView from '../view/event-new-view.js';
 import { generateSorting } from '../mock/sorting.js';
 import { NO_POINT_MASSAGES } from '../const.js';
+
+const siteHeaderElement = document.querySelector('.page-header');
+const siteTripMainElement = siteHeaderElement.querySelector('.trip-main');
 
 export default class TripPresenter {
   #pointContainer = null;
@@ -82,6 +86,7 @@ export default class TripPresenter {
     const massage = NO_POINT_MASSAGES.everthing;
 
     if (this.#pointsModel.length > 0) {
+      render(new TripInfoView(), siteTripMainElement, 'afterbegin');
       render(new SortingView({sorting}), this.#pointContainer);
     }
 

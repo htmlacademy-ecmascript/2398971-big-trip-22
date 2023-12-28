@@ -3,7 +3,7 @@ import AbstractView from '../framework/view/abstract-view.js';
 function createNoPointTemplate(massage) {
   return (
     `<p class="trip-events__msg">
-      ${massage};
+      ${massage}
     </p>`
   );
 }
