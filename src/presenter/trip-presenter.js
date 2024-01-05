@@ -8,8 +8,9 @@ import TripInfoView from '../view/trip-info-view.js';
 import PointPresenter from '../presenter/point-presenter.js';
 //import EventNewView from '../view/event-new-view.js';
 import { generateSorting } from '../mock/sorting.js';
-import { NO_POINT_MASSAGES } from '../const.js';
+import { NO_POINT_MASSAGES, SortType } from '../const.js';
 import { updateItem } from '../utils/common.js';
+import { sortPointDay, sortPointTime, sortPointPrice } from '../utils/point.js';
 
 const siteHeaderElement = document.querySelector('.page-header');
 const siteTripMainElement = siteHeaderElement.querySelector('.trip-main');
@@ -27,6 +28,8 @@ export default class TripPresenter {
   #eventListComponent = new EventPointListView();
 
   #pointPresenters = new Map();
+  #currentSortType = SortType.DEFAULT;
+  #sourcedTripPoints = [];
 
   constructor({pointContainer, pointsModel, offersModel, destinationsModel}) {
     this.#pointContainer = pointContainer;
@@ -39,6 +42,7 @@ export default class TripPresenter {
 
   init() {
     this.#renderPointSection();
+    this.#sourcedTripPoints = [...this.#pointsModel];
   }
 
   #renderEventPoints({eventPoint, eventOffers, eventDestination, allOffers, allDestinations}) {
@@ -62,11 +66,34 @@ export default class TripPresenter {
 
   #handlePointChange = (updatedTask) => {
     this.#pointsModel = updateItem(this.#pointsModel, updatedTask);
+    this.#sourcedTripPoints = updateItem(this.#sourcedTripPoints, updatedTask);
     this.#pointPresenters.get(updatedTask.id).init(updatedTask);
   };
 
+  #sortTasks(sortType) {
+    switch (sortType) {
+      case SortType.DAY:
+        this.#pointsModel.sort(sortPointDay);
+        break;
+      case SortType.TIME:
+        this.#pointsModel.sort(sortPointTime);
+        break;
+      case SortType.PRICE:
+        this.#pointsModel.sort(sortPointPrice);
+        break;
+      default:
+        this.#pointsModel = [...this.#sourcedTripPoints];
+    }
+
+    this.#currentSortType = sortType;
+  }
+
   #handleSortTypeChange = (sortType) => {
-    // - Сортируем задачи
+    if (this.#currentSortType === sortType) {
+      return;
+    }
+
+    this.#sortTasks(sortType);
     // - Очищаем список
     // - Рендерим список заново
   };

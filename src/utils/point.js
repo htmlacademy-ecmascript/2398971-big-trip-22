@@ -41,11 +41,19 @@ function isPointPast(dateTo) {
   return dayjs().isAfter(dateTo, 'day');
 }
 
+
+const sortPointDay = (pointA, pointB) => dayjs(pointA.dateFrom) > dayjs(pointB.dateFrom) ? -1 : 1;
+const sortPointTime = (pointA, pointB) => returnDateDuration(pointA.dateFrom, pointA.dateTo) > returnDateDuration(pointB.dateFrom, pointB.dateTo) ? -1 : 1;
+const sortPointPrice = (pointA, pointB) => pointA.basePrice > pointB.basePrice ? -1 : 1;
+
 export {
   humanizeTaskDueDate,
   returnDateDuration,
   returnDateDurationFormat,
   isPointFuture,
   isPointPresent,
-  isPointPast
+  isPointPast,
+  sortPointDay,
+  sortPointTime,
+  sortPointPrice,
 };
