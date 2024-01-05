@@ -133,6 +133,11 @@ function createEditingEventTemplate({eventPoint, eventDestination, allOffers, al
   const headerEditingEventTemplate = createHeaderEditingEventTemplate(eventPoint, allOffers, eventDestination, allDestinations);
   const SectionEditingEventTemplate = createSectionEditingEventTemplate(eventPoint, eventDestination, allOffers);
 
+  console.log(eventPoint);
+  console.log(eventDestination);
+  console.log(allOffers);
+  console.log(allDestinations);
+
   return `<li class="trip-events__item">
   <form class="event event--edit" action="#" method="post">
     ${headerEditingEventTemplate}
@@ -181,6 +186,6 @@ export default class EditingEventView extends AbstractView {
 
   #formSubmitHandler = (evt) => {
     evt.preventDefault();
-    this.#handleFormSubmit();
+    this.#handleFormSubmit(this.#eventPoint);
   };
 }
