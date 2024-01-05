@@ -1,5 +1,5 @@
 import AbstractView from '../framework/view/abstract-view.js';
-import { humanizeTaskDueDate } from '../utils.js';
+import { humanizeTaskDueDate } from '../utils/point.js';
 import { DATE_FORMAT } from '../const.js';
 
 function createHeaderEventTypeList (eventPoint, allOffers) {

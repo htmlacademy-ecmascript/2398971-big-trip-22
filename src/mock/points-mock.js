@@ -1,10 +1,8 @@
-import { getRandomInteger, getRandomArrayElement, createRandomRangeGeneratorNoRepetitions} from '../utils.js';
+import { getRandomInteger, createRandomRangeGeneratorNoRepetitions, getRandomArrayElement} from '../utils/common.js';
 import { mockDestinations } from '../mock/destinations-mock.js';
 import { mockOffers } from '../mock/offers-mock.js';
 import { POINT_MAX_PRICE, POINTS__MAX_COUNT, DURATIONS } from '../const.js';
 import dayjs from 'dayjs';
-import dayjsRandom from 'dayjs-random';
-
 
 const randomSelectedOffers = (idOffer) => {
   const randomOfferType = mockOffers[idOffer].offers;
@@ -14,28 +12,41 @@ const randomSelectedOffers = (idOffer) => {
   return selectedOffers;
 };
 
-function generateRandomDate () {
-  dayjs.extend(dayjsRandom);
+function getRandomDate (dateFrom) {
 
   const randomMinute = DURATIONS.minute[getRandomInteger(0, 2)];
   const randomHour = DURATIONS.hour[getRandomInteger(0, 2)];
   const randomDay = DURATIONS.day[getRandomInteger(0, 2)];
 
-  const randomDateFrom = dayjs.between('2020-01-01T00:00:00+00:00', '2020-06-01T00:00:00+00:00');
-  const randomDateTo = dayjs(randomDateFrom)
+  const dateTo = dayjs(dateFrom)
     .add(randomMinute, 'minute')
     .add(randomHour, 'hour')
     .add(randomDay, 'day')
     .toDate();
 
-  return {
-    dateFrom: randomDateFrom,
-    dateTo: randomDateTo
+  return dateTo;
+}
+
+
+function generateRandomDateInterval () {
+  const dateNow = dayjs().add(-5, 'day');
+  const previousDates = [dateNow];
+
+  return function () {
+    const currentDate = getRandomDate (previousDates[previousDates.length - 1]);
+    previousDates.push(currentDate);
+
+    return {
+      dateFrom: previousDates[previousDates.length - 2],
+      dateTo: currentDate
+    };
   };
 }
 
+const dateMocks = generateRandomDateInterval();
+
 const createPoint = (idPoint, idOffer) => {
-  const randomDate = generateRandomDate();
+  const randomDate = dateMocks();
 
   return {
     id: `f4b62099-293f-4c3d-a702-94eec4a2808c${idPoint}`,
