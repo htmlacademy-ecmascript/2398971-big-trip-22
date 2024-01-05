@@ -65,10 +65,22 @@ export default class TripPresenter {
     this.#pointPresenters.get(updatedTask.id).init(updatedTask);
   };
 
+  #handleSortTypeChange = (onSortTypeChange) => {
+    // - Сортируем задачи
+    // - Очищаем список
+    // - Рендерим список заново
+  };
+
+  // #renderSort() {
+  //   const onSortTypeChange = generateSorting(this.#pointsModel);
+  //   this.#noPointComponent = new SortingView({onSortTypeChange});
+  //   render(this.#noPointComponent, this.#pointContainer, RenderPosition.AFTERBEGIN);
+  // }
+
   #renderSort() {
-    const sorting = generateSorting(this.#pointsModel);
-    this.#noPointComponent = new SortingView({sorting});
-    render(this.#noPointComponent, this.#pointContainer, RenderPosition.AFTERBEGIN);
+    this.#sortComponent = new SortingView({
+      onSortTypeChange: this.#handleSortTypeChange
+    });
   }
 
   #renderNoPoints() {

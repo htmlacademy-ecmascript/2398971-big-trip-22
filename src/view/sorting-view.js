@@ -22,26 +22,36 @@ function createSortingListTemplate(sortingItems) {
 }
 
 export default class SortingView extends AbstractView {
-  #sorting = null;
+  #handleSortTypeChange = null;
 
-  constructor({sorting}) {
+  constructor({onSortTypeChange}) {
     super();
-    this.#sorting = sorting;
+    this.#handleSortTypeChange = onSortTypeChange;
 
-    Array.from(
-      {length : this.element.querySelectorAll('.trip-sort__input').length},
-      (_,index) => this.element.querySelectorAll('.trip-sort__input')[index].addEventListener('change', this.#switchSorting));
+  //   Array.from(
+  //     {length : this.element.querySelectorAll('.trip-sort__input').length},
+  //     (_,index) => this.element.querySelectorAll('.trip-sort__input')[index].addEventListener('change', this.#sortTypeChangeHandler));
+    this.element.addEventListener('click', this.#sortTypeChangeHandler);
   }
 
   get template() {
-    return createSortingListTemplate(this.#sorting);
+    return createSortingListTemplate(this.#handleSortTypeChange);
   }
 
-  #switchSorting = (evt) => {
-    evt.preventDefault();
-    // eslint-disable-next-line no-console
-    console.log(evt.target);
+  // #switchSorting = (evt) => {
+  //   evt.preventDefault();
+  //   // eslint-disable-next-line no-console
+  //   console.log(evt.target);
 
+  // };
+
+  #sortTypeChangeHandler = (evt) => {
+    if (evt.target.tagName !== 'A') {
+      return;
+    }
+
+    evt.preventDefault();
+    this.#handleSortTypeChange(evt.target.dataset.sortType);
   };
 
 }
