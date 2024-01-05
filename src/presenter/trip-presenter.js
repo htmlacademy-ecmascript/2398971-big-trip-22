@@ -9,6 +9,7 @@ import PointPresenter from '../presenter/point-presenter.js';
 //import EventNewView from '../view/event-new-view.js';
 import { generateSorting } from '../mock/sorting.js';
 import { NO_POINT_MASSAGES } from '../const.js';
+import { updateItem } from '../utils/common.js';
 
 const siteHeaderElement = document.querySelector('.page-header');
 const siteTripMainElement = siteHeaderElement.querySelector('.trip-main');
@@ -48,6 +49,11 @@ export default class TripPresenter {
     pointPresenter.init(eventPoint, eventOffers, eventDestination, allOffers, allDestinations);
     this.#pointPresenters.set(eventPoint.id, pointPresenter);
   }
+
+  #handlePointChange = (updatedTask) => {
+    this.#pointsModel = updateItem(this.#pointsModel, updatedTask);
+    this.#pointPresenters.get(updatedTask.id).init(updatedTask);
+  };
 
   #renderSort() {
     const sorting = generateSorting(this.#pointsModel);
