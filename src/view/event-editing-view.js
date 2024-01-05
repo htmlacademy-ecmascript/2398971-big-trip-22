@@ -181,6 +181,6 @@ export default class EditingEventView extends AbstractView {
 
   #formSubmitHandler = (evt) => {
     evt.preventDefault();
-    this.#handleFormSubmit();
+    this.#handleFormSubmit(this.#eventPoint);
   };
 }

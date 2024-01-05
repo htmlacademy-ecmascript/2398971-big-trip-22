@@ -1,13 +1,15 @@
-import { render, replace } from '../framework/render.js';
+import { render, RenderPosition } from '../framework/render.js';
 import EventPointListView from '../view/event-list-view.js';
 import SortingView from '../view/sorting-view.js';
-import EventPointView from '../view/event-point-view.js';
-import EditingEventView from '../view/event-editing-view.js';
+
+
 import NoPointView from '../view/no-point-view.js';
 import TripInfoView from '../view/trip-info-view.js';
+import PointPresenter from '../presenter/point-presenter.js';
 //import EventNewView from '../view/event-new-view.js';
 import { generateSorting } from '../mock/sorting.js';
 import { NO_POINT_MASSAGES } from '../const.js';
+import { updateItem } from '../utils/common.js';
 
 const siteHeaderElement = document.querySelector('.page-header');
 const siteTripMainElement = siteHeaderElement.querySelector('.trip-main');
@@ -19,8 +21,12 @@ export default class TripPresenter {
   #destinationsModel = null;
   #allOffers = null;
   #allDestinations = null;
+  #sortComponent = null;
+  #noPointComponent = null;
 
   #eventListComponent = new EventPointListView();
+
+  #pointPresenters = new Map();
 
   constructor({pointContainer, pointsModel, offersModel, destinationsModel}) {
     this.#pointContainer = pointContainer;
@@ -36,68 +42,47 @@ export default class TripPresenter {
   }
 
   #renderEventPoints({eventPoint, eventOffers, eventDestination, allOffers, allDestinations}) {
-    const escKeyDownHandler = (evt) => {
-      if (evt.key === 'Escape') {
-        evt.preventDefault();
-        replaceFormToPoint();
-        document.removeEventListener('keydown', escKeyDownHandler);
-      }
-    };
-
-    const eventPointComponent = new EventPointView({
-      eventPoint,
-      eventOffers,
-      eventDestination,
-      onEditClick: () => {
-        replacePointToForm();
-        document.addEventListener('keydown', escKeyDownHandler);
-      }
+    const pointPresenter = new PointPresenter({
+      eventListComponent: this.#eventListComponent.element,
+      eventOffers: eventOffers,
+      eventDestination:eventDestination,
+      allOffers: allOffers,
+      allDestinations:allDestinations,
+      onDataChange: this.#handlePointChange,
+      onModeChange: this.#handleModeChange
     });
 
-    const eventEditComponent = new EditingEventView({
-      eventPoint,
-      eventOffers,
-      eventDestination,
-      allOffers,
-      allDestinations,
-      onEditClick: () => {
-        replaceFormToPoint();
-        document.removeEventListener('keydown', escKeyDownHandler);
-      },
-      onFormSubmit: () => {
-        replaceFormToPoint();
-        document.removeEventListener('keydown', escKeyDownHandler);
-      }
-    });
-
-    function replacePointToForm() {
-      replace(eventEditComponent, eventPointComponent);
-    }
-
-    function replaceFormToPoint() {
-      replace(eventPointComponent, eventEditComponent);
-    }
-
-    render(eventPointComponent, this.#eventListComponent.element);
+    pointPresenter.init(eventPoint);
+    this.#pointPresenters.set(eventPoint.id, pointPresenter);
   }
 
-  #renderPointSection () {
+  #handleModeChange = () => {
+    this.#pointPresenters.forEach((presenter) => presenter.resetView());
+  };
+
+  #handlePointChange = (updatedTask) => {
+    this.#pointsModel = updateItem(this.#pointsModel, updatedTask);
+    this.#pointPresenters.get(updatedTask.id).init(updatedTask);
+  };
+
+  #renderSort() {
     const sorting = generateSorting(this.#pointsModel);
+    this.#noPointComponent = new SortingView({sorting});
+    render(this.#noPointComponent, this.#pointContainer, RenderPosition.AFTERBEGIN);
+  }
+
+  #renderNoPoints() {
     const massage = NO_POINT_MASSAGES.everthing;
+    this.#sortComponent = new NoPointView({massage});
+    render(this.#sortComponent, this.#pointContainer, RenderPosition.AFTERBEGIN);
+  }
 
-    if (this.#pointsModel.length > 0) {
-      render(new TripInfoView(), siteTripMainElement, 'afterbegin');
-      render(new SortingView({sorting}), this.#pointContainer);
-    }
+  #renderTripInfo() {
+    render(new TripInfoView(), siteTripMainElement, RenderPosition.AFTERBEGIN);
+  }
 
-    if (this.#pointsModel.length <= 0) {
-      //console.log('Задач нет');
-      render (new NoPointView ({massage}), this.#pointContainer);
-    }
-
-    render(this.#eventListComponent, this.#pointContainer);
-
-    for (let i = 0; i < this.#pointsModel.length; i++) {
+  #renderPoints(from, to) {
+    for (let i = from; i < to; i++) {
       this.#renderEventPoints({
         eventPoint: this.#pointsModel[i],
         eventOffers: this.#offersModel.getOfferById(this.#pointsModel[i].type , this.#pointsModel[i].offers),
@@ -106,6 +91,31 @@ export default class TripPresenter {
         allDestinations: this.#allDestinations
       });
     }
+  }
+
+  #clearPointList() {
+    this.#pointPresenters.forEach((presenter) => presenter.destroy());
+    this.#pointPresenters.clear();
+  }
+
+  #renderPointList () {
+    render(this.#eventListComponent, this.#pointContainer);
+    this.#renderPoints(0, this.#pointsModel.length);
+  }
+
+  #renderPointSection () {
+
+    if (this.#pointsModel.length > 0) {
+      this.#renderTripInfo();
+      this.#renderSort();
+      this.#renderPointList();
+    }
+
+    if (this.#pointsModel.length <= 0) {
+      //console.log('Задач нет');
+      this.#renderNoPoints();
+    }
+
   }
 
 }
