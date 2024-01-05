@@ -1,4 +1,4 @@
-import { render, replace } from '../framework/render.js';
+import { render, replace, remove } from '../framework/render.js';
 import EventPointView from '../view/event-point-view.js';
 import EditingEventView from '../view/event-editing-view.js';
 
@@ -26,6 +26,9 @@ export default class PointPresenter {
     this.#allOffers = allOffers;
     this.#allDestinations = allDestinations;
 
+    const prevPointComponent = this.#eventPointComponent;
+    const prevPointEditComponent = this.#eventEditComponent;
+
     this.#eventPointComponent = new EventPointView({
       eventPoint: this.#eventPoint,
       eventOffers: this.#eventOffers,
@@ -43,7 +46,28 @@ export default class PointPresenter {
       onFormSubmit: this.#handleFormSubmit,
     });
 
-    render(this.#eventPointComponent, this.#eventListComponent);
+    if (prevPointComponent === null || prevPointEditComponent === null) {
+      render(this.#eventPointComponent, this.#eventListComponent);
+      return;
+    }
+
+    // Проверка на наличие в DOM необходима,
+    // чтобы не пытаться заменить то, что не было отрисовано
+    if (this.#eventListComponent.contains(prevPointComponent.element)) {
+      replace(this.#eventPointComponent, prevPointComponent);
+    }
+
+    if (this.#eventListComponent.contains(prevPointEditComponent.element)) {
+      replace(this.#eventEditComponent, prevPointEditComponent);
+    }
+
+    remove(prevPointComponent);
+    remove(prevPointEditComponent);
+  }
+
+  destroy() {
+    remove(this.#eventPointComponent);
+    remove(this.#eventEditComponent);
   }
 
   #escKeyDownHandler = (evt) => {
