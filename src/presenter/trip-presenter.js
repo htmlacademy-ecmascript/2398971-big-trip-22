@@ -1,4 +1,4 @@
-import { render, replace } from '../framework/render.js';
+import { render, replace, RenderPosition } from '../framework/render.js';
 import EventPointListView from '../view/event-list-view.js';
 import SortingView from '../view/sorting-view.js';
 import EventPointView from '../view/event-point-view.js';
@@ -19,8 +19,13 @@ export default class TripPresenter {
   #destinationsModel = null;
   #allOffers = null;
   #allDestinations = null;
+  #sortComponent = null;
+  #noPointComponent = null;
+
+  //#sorting = generateSorting(this.#pointsModel);
 
   #eventListComponent = new EventPointListView();
+
 
   constructor({pointContainer, pointsModel, offersModel, destinationsModel}) {
     this.#pointContainer = pointContainer;
@@ -81,23 +86,24 @@ export default class TripPresenter {
     render(eventPointComponent, this.#eventListComponent.element);
   }
 
-  #renderPointSection () {
+  #renderSort() {
     const sorting = generateSorting(this.#pointsModel);
+    this.#noPointComponent = new SortingView({sorting});
+    render(this.#noPointComponent, this.#pointContainer, RenderPosition.AFTERBEGIN);
+  }
+
+  #renderNoPoints() {
     const massage = NO_POINT_MASSAGES.everthing;
+    this.#sortComponent = new NoPointView({massage});
+    render(this.#sortComponent, this.#pointContainer, RenderPosition.AFTERBEGIN);
+  }
 
-    if (this.#pointsModel.length > 0) {
-      render(new TripInfoView(), siteTripMainElement, 'afterbegin');
-      render(new SortingView({sorting}), this.#pointContainer);
-    }
+  #renderTripInfo() {
+    render(new TripInfoView(), siteTripMainElement, RenderPosition.AFTERBEGIN);
+  }
 
-    if (this.#pointsModel.length <= 0) {
-      //console.log('Задач нет');
-      render (new NoPointView ({massage}), this.#pointContainer);
-    }
-
-    render(this.#eventListComponent, this.#pointContainer);
-
-    for (let i = 0; i < this.#pointsModel.length; i++) {
+  #renderPoints(from, to) {
+    for (let i = from; i < to; i++) {
       this.#renderEventPoints({
         eventPoint: this.#pointsModel[i],
         eventOffers: this.#offersModel.getOfferById(this.#pointsModel[i].type , this.#pointsModel[i].offers),
@@ -106,6 +112,26 @@ export default class TripPresenter {
         allDestinations: this.#allDestinations
       });
     }
+  }
+
+  #renderPointList () {
+    render(this.#eventListComponent, this.#pointContainer);
+    this.#renderPoints(0, this.#pointsModel.length);
+  }
+
+  #renderPointSection () {
+
+    if (this.#pointsModel.length > 0) {
+      this.#renderTripInfo();
+      this.#renderSort();
+      this.#renderPointList();
+    }
+
+    if (this.#pointsModel.length <= 0) {
+      //console.log('Задач нет');
+      this.#renderNoPoints();
+    }
+
   }
 
 }
