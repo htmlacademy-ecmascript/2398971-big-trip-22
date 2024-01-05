@@ -3,6 +3,7 @@ import { mockDestinations } from '../mock/destinations-mock.js';
 import { mockOffers } from '../mock/offers-mock.js';
 import { POINT_MAX_PRICE, POINTS__MAX_COUNT, DURATIONS } from '../const.js';
 import dayjs from 'dayjs';
+import {nanoid} from 'nanoid';
 
 const randomSelectedOffers = (idOffer) => {
   const randomOfferType = mockOffers[idOffer].offers;
@@ -49,7 +50,7 @@ const createPoint = (idPoint, idOffer) => {
   const randomDate = dateMocks();
 
   return {
-    id: `f4b62099-293f-4c3d-a702-94eec4a2808c${idPoint}`,
+    //id: `f4b62099-293f-4c3d-a702-94eec4a2808c${idPoint}`,
     basePrice: Math.floor(Math.random() * POINT_MAX_PRICE),
     dateFrom: randomDate.dateFrom,
     dateTo: randomDate.dateTo,
@@ -69,7 +70,10 @@ const generatePoint = (idPoint) => {
 const pointsMock = Array.from({length : POINTS__MAX_COUNT},(_,index) => generatePoint(index + 1));
 
 function getRandomPoint() {
-  return getRandomArrayElement(pointsMock);
+  return {
+    id: nanoid(),
+    ...getRandomArrayElement(pointsMock)
+  };
 }
 
 export {getRandomPoint};

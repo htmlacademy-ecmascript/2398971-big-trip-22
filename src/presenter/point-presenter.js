@@ -2,6 +2,11 @@ import { render, replace, remove } from '../framework/render.js';
 import EventPointView from '../view/event-point-view.js';
 import EditingEventView from '../view/event-editing-view.js';
 
+const Mode = {
+  DEFAULT: 'DEFAULT',
+  EDITING: 'EDITING',
+};
+
 export default class PointPresenter {
   #eventListComponent = null;
 
@@ -14,8 +19,11 @@ export default class PointPresenter {
   #eventPointComponent = null;
   #eventEditComponent = null;
   #handleDataChange = null;
+  #handleModeChange = null;
 
-  constructor ({eventListComponent, onDataChange, eventOffers, eventDestination, allOffers, allDestinations}) {
+  #mode = Mode.DEFAULT;
+
+  constructor ({eventListComponent, eventOffers, eventDestination, allOffers, allDestinations, onDataChange, onModeChange}) {
     this.#eventOffers = eventOffers;
     this.#eventDestination = eventDestination;
     this.#allOffers = allOffers;
@@ -23,6 +31,7 @@ export default class PointPresenter {
 
     this.#eventListComponent = eventListComponent;
     this.#handleDataChange = onDataChange;
+    this.#handleModeChange = onModeChange;
   }
 
   init(eventPoint) {
@@ -54,13 +63,11 @@ export default class PointPresenter {
       return;
     }
 
-    // Проверка на наличие в DOM необходима,
-    // чтобы не пытаться заменить то, что не было отрисовано
-    if (this.#eventListComponent.contains(prevPointComponent.element)) {
+    if (this.#mode === Mode.DEFAULT) {
       replace(this.#eventPointComponent, prevPointComponent);
     }
 
-    if (this.#eventListComponent.contains(prevPointEditComponent.element)) {
+    if (this.#mode === Mode.EDITING) {
       replace(this.#eventEditComponent, prevPointEditComponent);
     }
 
@@ -73,6 +80,12 @@ export default class PointPresenter {
     remove(this.#eventEditComponent);
   }
 
+  resetView() {
+    if (this.#mode !== Mode.DEFAULT) {
+      this.#replaceFormToPoint();
+    }
+  }
+
   #escKeyDownHandler = (evt) => {
     if (evt.key === 'Escape') {
       evt.preventDefault();
@@ -83,11 +96,14 @@ export default class PointPresenter {
   #replacePointToForm() {
     replace(this.#eventEditComponent, this.#eventPointComponent);
     document.removeEventListener('keydown', this.#escKeyDownHandler);
+    this.#handleModeChange();
+    this.#mode = Mode.EDITING;
   }
 
   #replaceFormToPoint() {
     replace(this.#eventPointComponent, this.#eventEditComponent);
     document.removeEventListener('keydown', this.#escKeyDownHandler);
+    this.#mode = Mode.DEFAULT;
   }
 
   #handleOpenClick = () => {
