@@ -74,7 +74,7 @@ export {
   PICTURE_MAX,
   NO_POINT_MASSAGES,
   FilterType,
-  SortingType
+  SortingType,
 };
 
 
