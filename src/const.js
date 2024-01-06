@@ -53,7 +53,7 @@ const FilterType = {
   FUTURE: 'future'
 };
 
-const SortingType = {
+const SortType = {
   DAY: 'day',
   EVENT: 'event',
   TIME: 'time',
@@ -74,7 +74,7 @@ export {
   PICTURE_MAX,
   NO_POINT_MASSAGES,
   FilterType,
-  SortingType
+  SortType,
 };
 
 
