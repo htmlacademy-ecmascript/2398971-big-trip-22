@@ -1,4 +1,4 @@
-import AbstractView from '../framework/view/abstract-view.js';
+import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import { humanizeTaskDueDate } from '../utils/point.js';
 import { DATE_FORMAT } from '../const.js';
 
@@ -130,6 +130,11 @@ function createSectionEditingEventTemplate (eventPoint, eventDestination, allOff
 
 function createEditingEventTemplate({eventPoint, eventDestination, allOffers, allDestinations}) {
 
+  // console.log(eventPoint);
+  // console.log(eventDestination);
+  console.log(allOffers);
+  // console.log(allDestinations);
+
   const headerEditingEventTemplate = createHeaderEditingEventTemplate(eventPoint, allOffers, eventDestination, allDestinations);
   const SectionEditingEventTemplate = createSectionEditingEventTemplate(eventPoint, eventDestination, allOffers);
 
@@ -141,7 +146,7 @@ function createEditingEventTemplate({eventPoint, eventDestination, allOffers, al
 </li>`;
 }
 
-export default class EditingEventView extends AbstractView {
+export default class EditingEventView extends AbstractStatefulView {
   #eventPoint = null;
   #eventOffers = null;
   #eventDestination = null;
@@ -152,7 +157,8 @@ export default class EditingEventView extends AbstractView {
 
   constructor({eventPoint, eventOffers, eventDestination, allOffers, allDestinations, onEditClick, onFormSubmit}) {
     super();
-    this.#eventPoint = eventPoint;
+    this._setState(EditingEventView.parsePointToState(eventPoint));
+    // this.#eventPoint = eventPoint;
     this.#eventOffers = eventOffers;
     this.#eventDestination = eventDestination;
     this.#allOffers = allOffers;
@@ -166,12 +172,13 @@ export default class EditingEventView extends AbstractView {
 
   get template() {
     return createEditingEventTemplate({
-      eventPoint: this.#eventPoint,
+      eventPoint: this._state,
       eventOffers: this.#eventOffers,
       eventDestination: this.#eventDestination,
       allOffers: this.#allOffers,
       allDestinations: this.#allDestinations
-    });
+    }
+    );
   }
 
   #closeEditClickHandler = (evt) => {
@@ -181,6 +188,18 @@ export default class EditingEventView extends AbstractView {
 
   #formSubmitHandler = (evt) => {
     evt.preventDefault();
-    this.#handleFormSubmit(this.#eventPoint);
+    this.#handleFormSubmit(EditingEventView.parseStateToPoint(this._state));
   };
+
+  static parsePointToState(point) {
+    const state = {...point};
+
+    return state;
+  }
+
+  static parseStateToPoint(state) {
+    const point = {...state};
+
+    return point;
+  }
 }
