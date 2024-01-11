@@ -179,6 +179,12 @@ export default class EditingEventView extends AbstractStatefulView {
     );
   }
 
+  reset(eventPoint) {
+    this.updateElement(
+      EditingEventView.parsePointToState(eventPoint),
+    );
+  }
+
   _restoreHandlers() {
     this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#closeEditClickHandler);
     this.element.querySelector('form').addEventListener('submit', this.#formSubmitHandler);
