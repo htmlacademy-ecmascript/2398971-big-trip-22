@@ -31,7 +31,7 @@ function getRandomDate (dateFrom) {
 
 function generateRandomDateInterval () {
   const dateNow = dayjs().add(-5, 'day');
-  const previousDates = [dateNow];
+  const previousDates = [dateNow.$d];
 
   return function () {
     const currentDate = getRandomDate (previousDates[previousDates.length - 1]);

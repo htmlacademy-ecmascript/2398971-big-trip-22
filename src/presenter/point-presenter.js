@@ -11,8 +11,6 @@ export default class PointPresenter {
   #eventListComponent = null;
 
   #eventPoint = null;
-  #eventOffers = null;
-  #eventDestination = null;
   #allOffers = null;
   #allDestinations = null;
 
@@ -23,9 +21,7 @@ export default class PointPresenter {
 
   #mode = Mode.DEFAULT;
 
-  constructor ({eventListComponent, eventOffers, eventDestination, allOffers, allDestinations, onDataChange, onModeChange}) {
-    this.#eventOffers = eventOffers;
-    this.#eventDestination = eventDestination;
+  constructor ({eventListComponent, allOffers, allDestinations, onDataChange, onModeChange}) {
     this.#allOffers = allOffers;
     this.#allDestinations = allDestinations;
 
@@ -42,16 +38,14 @@ export default class PointPresenter {
 
     this.#eventPointComponent = new EventPointView({
       eventPoint: this.#eventPoint,
-      eventOffers: this.#eventOffers,
-      eventDestination: this.#eventDestination,
+      allOffers: this.#allOffers,
+      allDestinations: this.#allDestinations,
       onEditClick: this.#handleOpenClick,
       onFavoriteClick: this.#handleFavoriteClick,
     });
 
     this.#eventEditComponent = new EditingEventView({
       eventPoint: this.#eventPoint,
-      eventOffers: this.#eventOffers,
-      eventDestination: this.#eventDestination,
       allOffers: this.#allOffers,
       allDestinations: this.#allDestinations,
       onEditClick: this.#handleCloseClick,

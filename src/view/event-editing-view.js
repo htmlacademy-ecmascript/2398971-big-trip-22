@@ -132,11 +132,6 @@ function createSectionEditingEventTemplate (eventPoint, allOffers, allDestinatio
 
 function createEditingEventTemplate({eventPoint, allOffers, allDestinations}) {
 
-  //console.log(eventPoint);
-  // console.log(eventDestination);
-  //console.log(allOffers);
-  // console.log(allDestinations);
-
   const headerEditingEventTemplate = createHeaderEditingEventTemplate(eventPoint, allOffers, allDestinations);
   const SectionEditingEventTemplate = createSectionEditingEventTemplate(eventPoint, allOffers, allDestinations);
 
@@ -149,19 +144,14 @@ function createEditingEventTemplate({eventPoint, allOffers, allDestinations}) {
 }
 
 export default class EditingEventView extends AbstractStatefulView {
-  #eventPoint = null;
-  #eventOffers = null;
-  #eventDestination = null;
   #allOffers = null;
   #allDestinations = null;
   #handleEditClick = null;
   #handleFormSubmit = null;
 
-  constructor({eventPoint, eventOffers, eventDestination, allOffers, allDestinations, onEditClick, onFormSubmit}) {
+  constructor({eventPoint, allOffers, allDestinations, onEditClick, onFormSubmit}) {
     super();
     this._setState(EditingEventView.parsePointToState(eventPoint));
-    this.#eventOffers = eventOffers;
-    this.#eventDestination = eventDestination;
     this.#allOffers = allOffers;
     this.#allDestinations = allDestinations;
     this.#handleFormSubmit = onFormSubmit;
