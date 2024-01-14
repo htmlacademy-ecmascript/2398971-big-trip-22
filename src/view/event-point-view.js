@@ -37,12 +37,16 @@ function createEventSchedule (dateFrom, dateTo) {
 </div>`;
 }
 
-function createPointTemplate({point, offers, destination}) {
-  const {type, dateFrom, dateTo, isFavorite, basePrice} = point;
+function createPointTemplate({eventPoint, allOffers, allDestinations,}) {
+  const {type, dateFrom, dateTo, isFavorite, basePrice} = eventPoint;
 
-  const selectedOffersTemplate = createSelectedOffersTemplate(offers);
+  const eventOffers = allOffers.find((element)=> element.type === eventPoint.type);
+  const eventCheckedOffers = eventOffers.offers.filter((element) => eventPoint.offers.find((item) => item === element.id));
+  const eventDestination = allDestinations.find((element)=> element.id === eventPoint.destination);
+
+  const selectedOffersTemplate = createSelectedOffersTemplate(eventCheckedOffers);
   const FavoriteTemplate = createFavoriteTemplate(isFavorite);
-  const destinationTemplate = destination.name;
+  const destinationTemplate = eventDestination.name;
   const datePoint = humanizeTaskDueDate(dateFrom,DATE_FORMAT.datMonth);
 
   return `<li class="trip-events__item">
@@ -76,16 +80,16 @@ function createPointTemplate({point, offers, destination}) {
 
 export default class EventPointView extends AbstractView {
   #eventPoint = null;
-  #eventOffers = null;
-  #eventDestination = null;
+  #allOffers = null;
+  #allDestinations = null;
   #handleEditClick = null;
   #handleFavoriteClick = null;
 
-  constructor({eventPoint, eventOffers, eventDestination, onEditClick, onFavoriteClick}) {
+  constructor({eventPoint, allOffers, allDestinations, onEditClick, onFavoriteClick}) {
     super();
     this.#eventPoint = eventPoint;
-    this.#eventOffers = eventOffers;
-    this.#eventDestination = eventDestination;
+    this.#allOffers = allOffers;
+    this.#allDestinations = allDestinations;
     this.#handleEditClick = onEditClick;
     this.#handleFavoriteClick = onFavoriteClick;
 
@@ -95,9 +99,9 @@ export default class EventPointView extends AbstractView {
 
   get template() {
     return createPointTemplate({
-      point: this.#eventPoint,
-      offers: this.#eventOffers,
-      destination: this.#eventDestination
+      eventPoint: this.#eventPoint,
+      allOffers: this.#allOffers,
+      allDestinations: this.#allDestinations
     });
   }
 

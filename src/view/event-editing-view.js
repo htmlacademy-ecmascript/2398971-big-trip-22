@@ -1,4 +1,4 @@
-import AbstractView from '../framework/view/abstract-view.js';
+import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import { humanizeTaskDueDate } from '../utils/point.js';
 import { DATE_FORMAT } from '../const.js';
 
@@ -25,7 +25,8 @@ function createHeaderEventTypeList (eventPoint, allOffers) {
     </div>`;
 }
 
-function createHeaderEventDestination (eventPoint, eventDestination, allDestinations) {
+function createHeaderEventDestination (eventPoint, allDestinations) {
+  const eventDestination = allDestinations.find((element)=> element.id === eventPoint.destination);
 
   return `
     <div class="event__field-group  event__field-group--destination">
@@ -87,7 +88,8 @@ function createSectionOffers (eventPoint, allOffers) {
   `;
 }
 
-function createSectionDestination(eventDestination) {
+function createSectionDestination(eventPoint, allDestinations) {
+  const eventDestination = allDestinations.find((element)=> element.id === eventPoint.destination);
 
   return `
     <section class="event__section  event__section--destination">
@@ -97,7 +99,7 @@ function createSectionDestination(eventDestination) {
   `;
 }
 
-function createHeaderEditingEventTemplate (eventPoint, allOffers , eventDestination, allDestinations) {
+function createHeaderEditingEventTemplate (eventPoint, allOffers, allDestinations) {
 
   return `
     <header class="event__header">
@@ -105,7 +107,7 @@ function createHeaderEditingEventTemplate (eventPoint, allOffers , eventDestinat
         ${createHeaderEventTypeList(eventPoint, allOffers)}
       </div>
 
-      ${createHeaderEventDestination(eventPoint, eventDestination, allDestinations)}
+      ${createHeaderEventDestination(eventPoint, allDestinations)}
 
       ${createHeaderEventTime(eventPoint)}
 
@@ -119,19 +121,19 @@ function createHeaderEditingEventTemplate (eventPoint, allOffers , eventDestinat
     </header>`;
 }
 
-function createSectionEditingEventTemplate (eventPoint, eventDestination, allOffers) {
+function createSectionEditingEventTemplate (eventPoint, allOffers, allDestinations) {
 
   return `
     <section class="event__details">
       ${createSectionOffers(eventPoint, allOffers)}
-      ${createSectionDestination(eventDestination)}
+      ${createSectionDestination(eventPoint, allDestinations)}
   </section>`;
 }
 
-function createEditingEventTemplate({eventPoint, eventDestination, allOffers, allDestinations}) {
+function createEditingEventTemplate({eventPoint, allOffers, allDestinations}) {
 
-  const headerEditingEventTemplate = createHeaderEditingEventTemplate(eventPoint, allOffers, eventDestination, allDestinations);
-  const SectionEditingEventTemplate = createSectionEditingEventTemplate(eventPoint, eventDestination, allOffers);
+  const headerEditingEventTemplate = createHeaderEditingEventTemplate(eventPoint, allOffers, allDestinations);
+  const SectionEditingEventTemplate = createSectionEditingEventTemplate(eventPoint, allOffers, allDestinations);
 
   return `<li class="trip-events__item">
   <form class="event event--edit" action="#" method="post">
@@ -141,37 +143,45 @@ function createEditingEventTemplate({eventPoint, eventDestination, allOffers, al
 </li>`;
 }
 
-export default class EditingEventView extends AbstractView {
-  #eventPoint = null;
-  #eventOffers = null;
-  #eventDestination = null;
+export default class EditingEventView extends AbstractStatefulView {
   #allOffers = null;
   #allDestinations = null;
   #handleEditClick = null;
   #handleFormSubmit = null;
 
-  constructor({eventPoint, eventOffers, eventDestination, allOffers, allDestinations, onEditClick, onFormSubmit}) {
+  constructor({eventPoint, allOffers, allDestinations, onEditClick, onFormSubmit}) {
     super();
-    this.#eventPoint = eventPoint;
-    this.#eventOffers = eventOffers;
-    this.#eventDestination = eventDestination;
+    this._setState(EditingEventView.parsePointToState(eventPoint));
     this.#allOffers = allOffers;
     this.#allDestinations = allDestinations;
     this.#handleFormSubmit = onFormSubmit;
     this.#handleEditClick = onEditClick;
 
-    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#closeEditClickHandler);
-    this.element.querySelector('form').addEventListener('submit', this.#formSubmitHandler);
+    this._restoreHandlers();
   }
 
   get template() {
     return createEditingEventTemplate({
-      eventPoint: this.#eventPoint,
-      eventOffers: this.#eventOffers,
-      eventDestination: this.#eventDestination,
+      eventPoint: this._state,
       allOffers: this.#allOffers,
       allDestinations: this.#allDestinations
-    });
+    }
+    );
+  }
+
+  reset(eventPoint) {
+    this.updateElement(
+      EditingEventView.parsePointToState(eventPoint),
+    );
+  }
+
+  _restoreHandlers() {
+    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#closeEditClickHandler);
+    this.element.querySelector('form').addEventListener('submit', this.#formSubmitHandler);
+    this.element.querySelector('.event__type-list').addEventListener('change', this.#eventTypeToggleHandler);
+    this.element.querySelector('.event__input--destination').addEventListener('change', this.#eventDestinationToggleHandler);
+    this.element.querySelector('.event__input--price').addEventListener('change', this.#eventPriceToggleHandler);
+    this.element.querySelector('.event__available-offers').addEventListener('change', this.#eventoffersToggleHandler);
   }
 
   #closeEditClickHandler = (evt) => {
@@ -181,6 +191,66 @@ export default class EditingEventView extends AbstractView {
 
   #formSubmitHandler = (evt) => {
     evt.preventDefault();
-    this.#handleFormSubmit(this.#eventPoint);
+    this.#handleFormSubmit(EditingEventView.parseStateToPoint(this._state));
   };
+
+  #eventTypeToggleHandler = (evt) => {
+    evt.preventDefault();
+    this.updateElement({
+      type: evt.target.value,
+      offers: [],
+    });
+  };
+
+  #eventDestinationToggleHandler = (evt) => {
+    evt.preventDefault();
+    this.updateElement({
+      destination: this.#getDestinationById(evt.target.value).id,
+    });
+  };
+
+  #eventPriceToggleHandler = (evt) => {
+    evt.preventDefault();
+    this._setState({
+      basePrice: evt.target.value,
+    });
+  };
+
+  #eventoffersToggleHandler = (evt) => {
+    evt.preventDefault();
+    this.updateElement({
+      offers: this.#getCheckedOfferIdByName(this._state),
+    });
+  };
+
+  static parsePointToState(eventPoint) {
+    return {...eventPoint,
+      type: eventPoint.type,
+      destination: eventPoint.destination,
+      basePrice: eventPoint.basePrice,
+      offers: eventPoint.offers,
+    };
+  }
+
+  static parseStateToPoint(state) {
+
+    return {...state};
+  }
+
+  #getDestinationById(destinationId) {
+
+    return this.#allDestinations.find((element)=> element.name === destinationId);
+  }
+
+  #getOffersByType(type) {
+
+    return this.#allOffers.find((element)=> element.type === type).offers;
+  }
+
+  #getCheckedOfferIdByName (eventPoint) {
+    const pointOffers = this.#getOffersByType(eventPoint.type);
+
+    return Array.from(this.element.querySelectorAll('.event__offer-checkbox:checked'))
+      .map((element) => (pointOffers.find((elementId)=> elementId.title === element.name).id));
+  }
 }

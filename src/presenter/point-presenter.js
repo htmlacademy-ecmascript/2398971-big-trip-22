@@ -11,8 +11,6 @@ export default class PointPresenter {
   #eventListComponent = null;
 
   #eventPoint = null;
-  #eventOffers = null;
-  #eventDestination = null;
   #allOffers = null;
   #allDestinations = null;
 
@@ -23,9 +21,7 @@ export default class PointPresenter {
 
   #mode = Mode.DEFAULT;
 
-  constructor ({eventListComponent, eventOffers, eventDestination, allOffers, allDestinations, onDataChange, onModeChange}) {
-    this.#eventOffers = eventOffers;
-    this.#eventDestination = eventDestination;
+  constructor ({eventListComponent, allOffers, allDestinations, onDataChange, onModeChange}) {
     this.#allOffers = allOffers;
     this.#allDestinations = allDestinations;
 
@@ -42,16 +38,14 @@ export default class PointPresenter {
 
     this.#eventPointComponent = new EventPointView({
       eventPoint: this.#eventPoint,
-      eventOffers: this.#eventOffers,
-      eventDestination: this.#eventDestination,
+      allOffers: this.#allOffers,
+      allDestinations: this.#allDestinations,
       onEditClick: this.#handleOpenClick,
       onFavoriteClick: this.#handleFavoriteClick,
     });
 
     this.#eventEditComponent = new EditingEventView({
       eventPoint: this.#eventPoint,
-      eventOffers: this.#eventOffers,
-      eventDestination: this.#eventDestination,
       allOffers: this.#allOffers,
       allDestinations: this.#allDestinations,
       onEditClick: this.#handleCloseClick,
@@ -82,6 +76,7 @@ export default class PointPresenter {
 
   resetView() {
     if (this.#mode !== Mode.DEFAULT) {
+      this.#eventEditComponent.reset(this.#eventPoint);
       this.#replaceFormToPoint();
     }
   }
@@ -89,6 +84,7 @@ export default class PointPresenter {
   #escKeyDownHandler = (evt) => {
     if (evt.key === 'Escape') {
       evt.preventDefault();
+      this.#eventEditComponent.reset(this.#eventPoint);
       this.#replaceFormToPoint();
     }
   };
@@ -112,6 +108,7 @@ export default class PointPresenter {
   };
 
   #handleCloseClick = () => {
+    this.#eventEditComponent.reset(this.#eventPoint);
     this.#replaceFormToPoint();
     document.removeEventListener('keydown', this.#escKeyDownHandler);
   };

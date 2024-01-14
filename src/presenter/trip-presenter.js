@@ -43,11 +43,9 @@ export default class TripPresenter {
     this.#sourcedTripPoints = [...this.#pointsModel];
   }
 
-  #renderEventPoints({eventPoint, eventOffers, eventDestination, allOffers, allDestinations}) {
+  #renderEventPoints({eventPoint, allOffers, allDestinations}) {
     const pointPresenter = new PointPresenter({
       eventListComponent: this.#eventListComponent.element,
-      eventOffers: eventOffers,
-      eventDestination:eventDestination,
       allOffers: allOffers,
       allDestinations:allDestinations,
       onDataChange: this.#handlePointChange,
@@ -117,8 +115,6 @@ export default class TripPresenter {
     for (let i = from; i < to; i++) {
       this.#renderEventPoints({
         eventPoint: this.#pointsModel[i],
-        eventOffers: this.#offersModel.getOfferById(this.#pointsModel[i].type , this.#pointsModel[i].offers),
-        eventDestination: this.#destinationsModel.getDestinationById(this.#pointsModel[i].destination),
         allOffers: this.#allOffers,
         allDestinations: this.#allDestinations
       });
