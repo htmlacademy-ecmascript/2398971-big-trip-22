@@ -151,6 +151,7 @@ export default class EditingEventView extends AbstractStatefulView {
   #allDestinations = null;
   #handleEditClick = null;
   #handleFormSubmit = null;
+  #datepicker = null;
 
   constructor({eventPoint, allOffers, allDestinations, onEditClick, onFormSubmit}) {
     super();
@@ -172,6 +173,15 @@ export default class EditingEventView extends AbstractStatefulView {
     );
   }
 
+  removeElement() {
+    super.removeElement();
+
+    if (this.#datepicker) {
+      this.#datepicker.destroy();
+      this.#datepicker = null;
+    }
+  }
+
   reset(eventPoint) {
     this.updateElement(
       EditingEventView.parsePointToState(eventPoint),
@@ -185,6 +195,8 @@ export default class EditingEventView extends AbstractStatefulView {
     this.element.querySelector('.event__input--destination').addEventListener('change', this.#eventDestinationToggleHandler);
     this.element.querySelector('.event__input--price').addEventListener('change', this.#eventPriceToggleHandler);
     this.element.querySelector('.event__available-offers').addEventListener('change', this.#eventoffersToggleHandler);
+
+    this.#setDatepicker();
   }
 
   #closeEditClickHandler = (evt) => {
@@ -225,6 +237,45 @@ export default class EditingEventView extends AbstractStatefulView {
       offers: this.#getCheckedOfferIdByName(this._state),
     });
   };
+
+  #dateFromChangeHandler = ([date]) => {
+    this.updateElement({
+      dateFrom: date,
+    });
+  };
+
+  #dateToChangeHandler = ([date]) => {
+    this.updateElement({
+      dateTo: date,
+    });
+  };
+
+  #setDatepicker() {
+
+    this.#datepicker = flatpickr(
+      this.element.querySelector('[name="event-start-time"]'),
+      {
+        dateFormat: 'd/m/y H:i',
+        defaultDate: this._state.dateFrom,
+        onClose: this.#dateFromChangeHandler,
+        maxDate: this._state.dateTo,
+        enableTime: true,
+        'time_24hr': true,
+      },
+    );
+
+    this.#datepicker = flatpickr(
+      this.element.querySelector('[name="event-end-time"]'),
+      {
+        dateFormat: 'd/m/y H:i',
+        defaultDate: this._state.dateTo,
+        onClose: this.#dateToChangeHandler,
+        minDate: this._state.dateFrom,
+        enableTime: true,
+        'time_24hr': true,
+      },
+    );
+  }
 
   static parsePointToState(eventPoint) {
     return {...eventPoint,
