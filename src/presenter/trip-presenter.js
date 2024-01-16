@@ -7,7 +7,7 @@ import PointPresenter from '../presenter/point-presenter.js';
 //import EventNewView from '../view/event-new-view.js';
 
 import { NO_POINT_MASSAGES, SortType } from '../const.js';
-import { updateItem } from '../utils/common.js';
+//import { updateItem } from '../utils/common.js';
 import { sortPointDay, sortPointTime, sortPointPrice } from '../utils/point.js';
 
 const siteHeaderElement = document.querySelector('.page-header');
@@ -27,7 +27,6 @@ export default class TripPresenter {
   #pointPresenters = new Map();
   #sortComponent = null;
   #currentSortType = SortType.DAY;
-  #sourcedTripPoints = [];
 
   constructor({pointContainer, pointsModel, offersModel, destinationsModel}) {
     this.#pointContainer = pointContainer;
@@ -39,19 +38,27 @@ export default class TripPresenter {
   }
 
   get points() {
+    switch (this.#currentSortType) {
+      case SortType.DAY:
+        return [...this.#pointsModel].sort(sortPointDay);
+      case SortType.TIME:
+        return [...this.#pointsModel].sort(sortPointTime);
+      case SortType.PRICE:
+        return [...this.#pointsModel].sort(sortPointPrice);
+    }
+
     return this.#pointsModel;
   }
 
   init() {
     this.#renderPointSection();
-    this.#sourcedTripPoints = [...this.#pointsModel];
   }
 
-  #renderEventPoints({eventPoint, allOffers, allDestinations}) {
+  #renderEventPoints(eventPoint) {
     const pointPresenter = new PointPresenter({
       eventListComponent: this.#eventListComponent.element,
-      allOffers: allOffers,
-      allDestinations:allDestinations,
+      allOffers: this.#allOffers,
+      allDestinations:this.#allDestinations,
       onDataChange: this.#handlePointChange,
       onModeChange: this.#handleModeChange
     });
@@ -65,35 +72,16 @@ export default class TripPresenter {
   };
 
   #handlePointChange = (updatedPoint) => {
-    this.#pointsModel = updateItem(this.#pointsModel, updatedPoint);
-    this.#sourcedTripPoints = updateItem(this.#sourcedTripPoints, updatedPoint);
+    // Здесь будем вызывать обновление модели
     this.#pointPresenters.get(updatedPoint.id).init(updatedPoint);
   };
-
-  #sortPoints(sortType) {
-    switch (sortType) {
-      case SortType.DAY:
-        this.#pointsModel.sort(sortPointDay);
-        break;
-      case SortType.TIME:
-        this.#pointsModel.sort(sortPointTime);
-        break;
-      case SortType.PRICE:
-        this.#pointsModel.sort(sortPointPrice);
-        break;
-      default:
-        this.#pointsModel = [...this.#sourcedTripPoints];
-    }
-
-    this.#currentSortType = sortType;
-  }
 
   #handleSortTypeChange = (sortType) => {
     if (this.#currentSortType === sortType) {
       return;
     }
 
-    this.#sortPoints(sortType);
+    this.#currentSortType = sortType;
     this.#clearPointList();
     this.#renderPointList();
   };
@@ -115,14 +103,8 @@ export default class TripPresenter {
     render(new TripInfoView(), siteTripMainElement, RenderPosition.AFTERBEGIN);
   }
 
-  #renderPoints(from, to) {
-    for (let i = from; i < to; i++) {
-      this.#renderEventPoints({
-        eventPoint: this.#pointsModel[i],
-        allOffers: this.#allOffers,
-        allDestinations: this.#allDestinations
-      });
-    }
+  #renderPoints(points) {
+    points.forEach((eventPoint) => this.#renderEventPoints(eventPoint));
   }
 
   #clearPointList() {
@@ -132,19 +114,18 @@ export default class TripPresenter {
 
   #renderPointList () {
     render(this.#eventListComponent, this.#pointContainer);
-    this.#renderPoints(0, this.#pointsModel.length);
+    this.#renderPoints(this.points);
   }
 
   #renderPointSection () {
 
-    if (this.#pointsModel.length > 0) {
+    if (this.points.length > 0) {
       this.#renderTripInfo();
       this.#renderSort();
-      this.#sortPoints(this.#currentSortType);
       this.#renderPointList();
     }
 
-    if (this.#pointsModel.length <= 0) {
+    if (this.points.length <= 0) {
       //console.log('Задач нет');
       this.#renderNoPoints();
     }
