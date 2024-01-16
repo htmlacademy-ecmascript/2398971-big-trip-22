@@ -38,6 +38,10 @@ export default class TripPresenter {
     this.#allDestinations = this.#destinationsModel.destinations;
   }
 
+  get points() {
+    return this.#pointsModel;
+  }
+
   init() {
     this.#renderPointSection();
     this.#sourcedTripPoints = [...this.#pointsModel];
