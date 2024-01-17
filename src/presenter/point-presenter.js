@@ -116,7 +116,7 @@ export default class PointPresenter {
 
   #handleFavoriteClick = () => {
     this.#handleDataChange(
-      UserAction.UPDATE_TASK,
+      UserAction.UPDATE_POINT,
       UpdateType.MINOR,
       {...this.#eventPoint, isFavorite: !this.#eventPoint.isFavorite}
     );
@@ -124,7 +124,7 @@ export default class PointPresenter {
 
   #handleFormSubmit = (eventPoint) => {
     this.#handleDataChange(
-      UserAction.UPDATE_TASK,
+      UserAction.UPDATE_POINT,
       UpdateType.MINOR,
       eventPoint
     );
