@@ -1,4 +1,4 @@
-import { render, RenderPosition } from '../framework/render.js';
+import { render, remove, RenderPosition } from '../framework/render.js';
 import EventPointListView from '../view/event-list-view.js';
 import SortingView from '../view/sorting-view.js';
 import NoPointView from '../view/no-point-view.js';
@@ -20,6 +20,7 @@ export default class TripPresenter {
   #allOffers = null;
   #allDestinations = null;
   #noPointComponent = null;
+  #tripInfoComponent = null;
 
   #eventListComponent = new EventPointListView();
 
@@ -52,7 +53,7 @@ export default class TripPresenter {
   }
 
   init() {
-    this.#renderPointSection();
+    this.#renderTrip();
   }
 
   #renderEventPoints(eventPoint) {
@@ -73,12 +74,6 @@ export default class TripPresenter {
   };
 
   #handleViewAction = (actionType, updateType, update) => {
-    console.log(actionType, updateType, update);
-    // Здесь будем вызывать обновление модели.
-    // actionType - действие пользователя, нужно чтобы понять, какой метод модели вызвать
-    // updateType - тип изменений, нужно чтобы понять, что после нужно обновить
-    // update - обновленные данные
-
     switch (actionType) {
       case UserAction.UPDATE_POINT:
         this.#pointsModel.updateEventPoint(updateType, update);
@@ -93,18 +88,17 @@ export default class TripPresenter {
   };
 
   #handleModelEvent = (updateType, data) => {
-    console.log(updateType, data);
-    // В зависимости от типа изменений решаем, что делать:
     switch (updateType) {
       case UpdateType.PATCH:
-        // - обновить часть списка (например, когда поменялось содержание)
         this.#pointPresenters.get(data.id).init(data);
         break;
       case UpdateType.MINOR:
-        // - обновить список (например, когда точка удалена)
+        this.#clearTrip();
+        this.#renderTrip();
         break;
       case UpdateType.MAJOR:
-        // - обновить всю доску (например, при переключении фильтра)
+        this.#clearTrip({resetSortType: true});
+        this.#renderTrip();
         break;
     }
   };
@@ -115,54 +109,57 @@ export default class TripPresenter {
     }
 
     this.#currentSortType = sortType;
-    this.#clearPointList();
-    this.#renderPointList();
+    this.#clearTrip({resetSortType: true});
+    this.#renderTrip();
   };
 
   #renderSort() {
     this.#sortComponent = new SortingView({
-      onSortTypeChange: this.#handleSortTypeChange
+      onSortTypeChange: this.#handleSortTypeChange,
     });
     render(this.#sortComponent, this.#pointContainer);
   }
 
   #renderNoPoints() {
     const massage = NO_POINT_MASSAGES.everthing;
-    this.#sortComponent = new NoPointView({massage});
-    render(this.#sortComponent, this.#pointContainer, RenderPosition.AFTERBEGIN);
+    this.#noPointComponent = new NoPointView({massage});
+    render(this.#noPointComponent, this.#pointContainer, RenderPosition.AFTERBEGIN);
   }
 
   #renderTripInfo() {
-    render(new TripInfoView(), siteTripMainElement, RenderPosition.AFTERBEGIN);
+    this.#tripInfoComponent = new TripInfoView();
+    render(this.#tripInfoComponent, siteTripMainElement, RenderPosition.AFTERBEGIN);
   }
 
   #renderPoints(points) {
     points.forEach((eventPoint) => this.#renderEventPoints(eventPoint));
   }
 
-  #clearPointList() {
+  #clearTrip({resetSortType = false} = {}) {
     this.#pointPresenters.forEach((presenter) => presenter.destroy());
     this.#pointPresenters.clear();
+
+    remove(this.#tripInfoComponent);
+    remove(this.#sortComponent);
+    remove(this.#noPointComponent);
+
+    if (resetSortType) {
+      this.#currentSortType = SortType.DEFAULT;
+    }
   }
 
-  #renderPointList () {
-    render(this.#eventListComponent, this.#pointContainer);
-    this.#renderPoints(this.points);
-  }
-
-  #renderPointSection () {
+  #renderTrip () {
 
     if (this.points.length > 0) {
       this.#renderTripInfo();
       this.#renderSort();
-      this.#renderPointList();
+      render(this.#eventListComponent, this.#pointContainer);
+      this.#renderPoints(this.points);
     }
 
     if (this.points.length <= 0) {
       //console.log('Задач нет');
       this.#renderNoPoints();
     }
-
   }
-
 }
