@@ -2,6 +2,7 @@ import { render, replace, remove } from '../framework/render.js';
 import EventPointView from '../view/event-point-view.js';
 import EditingEventView from '../view/event-editing-view.js';
 import { UserAction, UpdateType } from '../const.js';
+import { isMinorUpdate } from '../utils/point.js';
 
 const Mode = {
   DEFAULT: 'DEFAULT',
@@ -51,6 +52,7 @@ export default class PointPresenter {
       allDestinations: this.#allDestinations,
       onEditClick: this.#handleCloseClick,
       onFormSubmit: this.#handleFormSubmit,
+      onDeleteClick: this.#handleDeleteClick,
     });
 
     if (prevPointComponent === null || prevPointEditComponent === null) {
@@ -122,13 +124,21 @@ export default class PointPresenter {
     );
   };
 
-  #handleFormSubmit = (eventPoint) => {
+  #handleFormSubmit = (update) => {
     this.#handleDataChange(
       UserAction.UPDATE_POINT,
-      UpdateType.MINOR,
-      eventPoint
+      isMinorUpdate (update, this.#eventPoint) ? UpdateType.MINOR : UpdateType.PATCH,
+      update,
     );
     this.#replaceFormToPoint();
     document.removeEventListener('keydown', this.#escKeyDownHandler);
+  };
+
+  #handleDeleteClick = (eventPoint) => {
+    this.#handleDataChange(
+      UserAction.DELETE_POINT,
+      UpdateType.MINOR,
+      eventPoint,
+    );
   };
 }

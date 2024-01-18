@@ -93,10 +93,16 @@ export default class TripPresenter {
         this.#pointPresenters.get(data.id).init(data);
         break;
       case UpdateType.MINOR:
+        // добавление в избранное
+        // изменение ивента
+        // изменение офферов
         this.#clearTrip();
         this.#renderTrip();
         break;
       case UpdateType.MAJOR:
+        //изменение даты
+        //изменение времени
+        //изменение цены
         this.#clearTrip({resetSortType: true});
         this.#renderTrip();
         break;
@@ -144,7 +150,7 @@ export default class TripPresenter {
     remove(this.#noPointComponent);
 
     if (resetSortType) {
-      this.#currentSortType = SortType.DEFAULT;
+      this.#currentSortType = SortType.DAY;
     }
   }
 
