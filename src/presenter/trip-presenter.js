@@ -119,12 +119,13 @@ export default class TripPresenter {
     }
 
     this.#currentSortType = sortType;
-    this.#clearTrip({resetSortType: true});
+    this.#clearTrip();
     this.#renderTrip();
   };
 
   #renderSort() {
     this.#sortComponent = new SortingView({
+      currentSortType: this.#currentSortType,
       onSortTypeChange: this.#handleSortTypeChange,
     });
     render(this.#sortComponent, this.#pointContainer);
