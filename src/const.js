@@ -34,16 +34,16 @@ const MILISECONDS = {
 };
 
 const POINT_MAX_PRICE = 1000;
-const POINTS__MAX_COUNT = 10;
+const POINTS__MAX_COUNT = 5;
 const PICTURE_MAX = 5;
 
-const NO_POINT_MASSAGES = {
-  loadFail: 'Failed to load latest route information',
-  loading: 'Loading...',
-  everthing: 'Click New Event to create your first point',
-  past: 'There are no past events now',
-  present: 'There are no present events now',
-  future: 'There are no future events now'
+const noPointMassages = {
+  LOAD_FAIL: 'Failed to load latest route information',
+  LOADING: 'Loading...',
+  EVERYTHING: 'Click New Event to create your first point',
+  PAST: 'There are no past events now',
+  PRESENT: 'There are no present events now',
+  FUTURE: 'There are no future events now'
 };
 
 const FilterType = {
@@ -84,7 +84,7 @@ export {
   POINT_MAX_PRICE,
   POINTS__MAX_COUNT,
   PICTURE_MAX,
-  NO_POINT_MASSAGES,
+  noPointMassages,
   FilterType,
   SortType,
   UserAction,

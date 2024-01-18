@@ -7,7 +7,7 @@ import TripInfoView from '../view/trip-info-view.js';
 import PointPresenter from '../presenter/point-presenter.js';
 //import EventNewView from '../view/event-new-view.js';
 
-import { NO_POINT_MASSAGES, SortType, UpdateType, UserAction} from '../const.js';
+import { SortType, UpdateType, UserAction, FilterType} from '../const.js';
 import { sortPointDay, sortPointTime, sortPointPrice } from '../utils/point.js';
 import {filter} from '../utils/filter.js';
 
@@ -30,6 +30,7 @@ export default class TripPresenter {
   #pointPresenters = new Map();
   #sortComponent = null;
   #currentSortType = SortType.DAY;
+  #filterType = FilterType.EVERYTHING;
 
   constructor({pointContainer, pointsModel, offersModel, destinationsModel, filterModel}) {
     this.#pointContainer = pointContainer;
@@ -45,9 +46,9 @@ export default class TripPresenter {
   }
 
   get points() {
-    const filterType = this.#filterModel.filter;
+    this.#filterType = this.#filterModel.filter;
     const eventPoints = this.#pointsModel.points;
-    const filteredPoints = filter[filterType](eventPoints);
+    const filteredPoints = filter[this.#filterType](eventPoints);
 
     switch (this.#currentSortType) {
       case SortType.DAY:
@@ -102,16 +103,10 @@ export default class TripPresenter {
         this.#pointPresenters.get(data.id).init(data);
         break;
       case UpdateType.MINOR:
-        // добавление в избранное
-        // изменение ивента
-        // изменение офферов
         this.#clearTrip();
         this.#renderTrip();
         break;
       case UpdateType.MAJOR:
-        //изменение даты
-        //изменение времени
-        //изменение цены
         this.#clearTrip({resetSortType: true});
         this.#renderTrip();
         break;
@@ -136,8 +131,9 @@ export default class TripPresenter {
   }
 
   #renderNoPoints() {
-    const massage = NO_POINT_MASSAGES.everthing;
-    this.#noPointComponent = new NoPointView({massage});
+    this.#noPointComponent = new NoPointView({
+      filterType: this.#filterType
+    });
     render(this.#noPointComponent, this.#pointContainer, RenderPosition.AFTERBEGIN);
   }
 
@@ -164,16 +160,20 @@ export default class TripPresenter {
   }
 
   #renderTrip () {
+    this.#renderTripInfo();
 
     if (this.points.length > 0) {
-      this.#renderTripInfo();
       this.#renderSort();
-      render(this.#eventListComponent, this.#pointContainer);
-      this.#renderPoints(this.points);
     }
 
+    render(this.#eventListComponent, this.#pointContainer);
+    this.#renderPoints(this.points);
+
     if (this.points.length <= 0) {
-      //console.log('Задач нет');
+      if (this.#pointsModel.points.length <= 0) {
+        this.#filterType = FilterType.EVERYTHING;
+      }
+
       this.#renderNoPoints();
     }
   }

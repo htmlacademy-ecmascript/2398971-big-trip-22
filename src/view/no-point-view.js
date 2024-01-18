@@ -1,23 +1,33 @@
 import AbstractView from '../framework/view/abstract-view.js';
+import { FilterType, noPointMassages } from '../const.js';
 
-function createNoPointTemplate(massage) {
+const NoTasksTextType = {
+  [FilterType.EVERYTHING]: noPointMassages.EVERYTHING,
+  [FilterType.PAST]: noPointMassages.PAST,
+  [FilterType.PRESENT]: noPointMassages.PRESENT,
+  [FilterType.FUTURE]: noPointMassages.FUTURE,
+};
+
+function createNoPointTemplate(filterType) {
+  const noTaskTextValue = NoTasksTextType[filterType];
+
   return (
     `<p class="trip-events__msg">
-      ${massage}
+      ${noTaskTextValue}
     </p>`
   );
 }
 
 export default class NoPointView extends AbstractView {
-  #massage = null;
+  #filterType = null;
 
-  constructor({massage}) {
+  constructor({filterType}) {
     super();
-    this.#massage = massage;
+    this.#filterType = filterType;
   }
 
 
   get template() {
-    return createNoPointTemplate(this.#massage);
+    return createNoPointTemplate(this.#filterType);
   }
 }
