@@ -1,4 +1,5 @@
 import { render, remove, RenderPosition } from '../framework/render.js';
+
 import EventPointListView from '../view/event-list-view.js';
 import SortingView from '../view/sorting-view.js';
 import NoPointView from '../view/no-point-view.js';
@@ -8,6 +9,7 @@ import PointPresenter from '../presenter/point-presenter.js';
 
 import { NO_POINT_MASSAGES, SortType, UpdateType, UserAction} from '../const.js';
 import { sortPointDay, sortPointTime, sortPointPrice } from '../utils/point.js';
+import {filter} from '../utils/filter.js';
 
 const siteHeaderElement = document.querySelector('.page-header');
 const siteTripMainElement = siteHeaderElement.querySelector('.trip-main');
@@ -17,6 +19,7 @@ export default class TripPresenter {
   #pointsModel = null;
   #offersModel = null;
   #destinationsModel = null;
+  #filterModel = null;
   #allOffers = null;
   #allDestinations = null;
   #noPointComponent = null;
@@ -28,28 +31,34 @@ export default class TripPresenter {
   #sortComponent = null;
   #currentSortType = SortType.DAY;
 
-  constructor({pointContainer, pointsModel, offersModel, destinationsModel}) {
+  constructor({pointContainer, pointsModel, offersModel, destinationsModel, filterModel}) {
     this.#pointContainer = pointContainer;
     this.#pointsModel = pointsModel;
     this.#offersModel = offersModel;
     this.#destinationsModel = destinationsModel;
+    this.#filterModel = filterModel;
     this.#allOffers = this.#offersModel.offers;
     this.#allDestinations = this.#destinationsModel.destinations;
 
     this.#pointsModel.addObserver(this.#handleModelEvent);
+    this.#filterModel.addObserver(this.#handleModelEvent);
   }
 
   get points() {
+    const filterType = this.#filterModel.filter;
+    const eventPoints = this.#pointsModel.points;
+    const filteredPoints = filter[filterType](eventPoints);
+
     switch (this.#currentSortType) {
       case SortType.DAY:
-        return [...this.#pointsModel.points].sort(sortPointDay);
+        return filteredPoints.sort(sortPointDay);
       case SortType.TIME:
-        return [...this.#pointsModel.points].sort(sortPointTime);
+        return filteredPoints.sort(sortPointTime);
       case SortType.PRICE:
-        return [...this.#pointsModel.points].sort(sortPointPrice);
+        return filteredPoints.sort(sortPointPrice);
     }
 
-    return this.#pointsModel.points;
+    return filteredPoints;
   }
 
   init() {

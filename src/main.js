@@ -25,7 +25,8 @@ const tripPresenter = new TripPresenter({
   pointContainer: siteEventsElement,
   pointsModel,
   offersModel,
-  destinationsModel
+  destinationsModel,
+  filterModel,
 });
 
 filterPresenter.init();
