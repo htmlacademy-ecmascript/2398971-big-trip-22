@@ -24,24 +24,28 @@ function createFilterListTemplate(filterItems) {
 
 export default class FilterView extends AbstractView {
   #filters = null;
+  #currentFilter = null;
+  #handleFilterTypeChange = null;
 
-  constructor({filters}) {
+  constructor({filters, currentFilterType, onFilterTypeChange}) {
     super();
     this.#filters = filters;
+    this.#currentFilter = currentFilterType;
+    this.#handleFilterTypeChange = onFilterTypeChange;
 
-    Array.from(
-      {length : this.element.querySelectorAll('.trip-filters__filter-input').length},
-      (_,index) => this.element.querySelectorAll('.trip-filters__filter-input')[index].addEventListener('change', this.#switchFilter));
+    // Array.from(
+    //   {length : this.element.querySelectorAll('.trip-filters__filter-input').length},
+    //   (_,index) => this.element.querySelectorAll('.trip-filters__filter-input')[index].addEventListener('change', this.#filterTypeChangeHandler));
+    this.element.addEventListener('change', this.#filterTypeChangeHandler);
   }
 
   get template() {
     return createFilterListTemplate(this.#filters);
   }
 
-  #switchFilter = (evt) => {
+  #filterTypeChangeHandler = (evt) => {
     evt.preventDefault();
-    // eslint-disable-next-line no-console
-    console.log(evt.target);
+    this.#handleFilterTypeChange(evt.target.value);
 
   };
 
