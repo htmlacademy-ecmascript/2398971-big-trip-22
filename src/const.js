@@ -34,7 +34,7 @@ const MILISECONDS = {
 };
 
 const POINT_MAX_PRICE = 1000;
-const POINTS__MAX_COUNT = 5;
+const POINTS__MAX_COUNT = 10;
 const PICTURE_MAX = 5;
 
 const noPointMassages = {

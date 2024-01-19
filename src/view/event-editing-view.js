@@ -1,6 +1,6 @@
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import { humanizeTaskDueDate } from '../utils/point.js';
-import { DATE_FORMAT } from '../const.js';
+import { DATE_FORMAT} from '../const.js';
 import flatpickr from 'flatpickr';
 
 import 'flatpickr/dist/flatpickr.min.css';
@@ -167,6 +167,7 @@ export default class EditingEventView extends AbstractStatefulView {
   }
 
   get template() {
+
     return createEditingEventTemplate({
       eventPoint: this._state,
       allOffers: this.#allOffers,
@@ -286,6 +287,7 @@ export default class EditingEventView extends AbstractStatefulView {
   };
 
   static parsePointToState(eventPoint) {
+
     return {...eventPoint,
       type: eventPoint.type,
       destination: eventPoint.destination,

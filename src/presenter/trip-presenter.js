@@ -5,7 +5,7 @@ import SortingView from '../view/sorting-view.js';
 import NoPointView from '../view/no-point-view.js';
 import TripInfoView from '../view/trip-info-view.js';
 import PointPresenter from '../presenter/point-presenter.js';
-//import EventNewView from '../view/event-new-view.js';
+import NewPointPresenter from './new-point-presenter.js';
 
 import { SortType, UpdateType, UserAction, FilterType} from '../const.js';
 import { sortPointDay, sortPointTime, sortPointPrice } from '../utils/point.js';
@@ -28,11 +28,12 @@ export default class TripPresenter {
   #eventListComponent = new EventPointListView();
 
   #pointPresenters = new Map();
+  #newPointPresenter = null;
   #sortComponent = null;
   #currentSortType = SortType.DAY;
   #filterType = FilterType.EVERYTHING;
 
-  constructor({pointContainer, pointsModel, offersModel, destinationsModel, filterModel}) {
+  constructor({pointContainer, pointsModel, offersModel, destinationsModel, filterModel, onNewPointDestroy}) {
     this.#pointContainer = pointContainer;
     this.#pointsModel = pointsModel;
     this.#offersModel = offersModel;
@@ -40,6 +41,14 @@ export default class TripPresenter {
     this.#filterModel = filterModel;
     this.#allOffers = this.#offersModel.offers;
     this.#allDestinations = this.#destinationsModel.destinations;
+
+    this.#newPointPresenter = new NewPointPresenter({
+      pointListContainer: this.#eventListComponent.element,
+      allOffers: this.#allOffers,
+      allDestinations:this.#allDestinations,
+      onDataChange: this.#handleViewAction,
+      onDestroy: onNewPointDestroy
+    });
 
     this.#pointsModel.addObserver(this.#handleModelEvent);
     this.#filterModel.addObserver(this.#handleModelEvent);
@@ -66,6 +75,12 @@ export default class TripPresenter {
     this.#renderTrip();
   }
 
+  createPoint() {
+    this.#currentSortType = SortType.DAY;
+    this.#filterModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
+    this.#newPointPresenter.init();
+  }
+
   #renderEventPoints(eventPoint) {
     const pointPresenter = new PointPresenter({
       eventListComponent: this.#eventListComponent.element,
@@ -80,6 +95,7 @@ export default class TripPresenter {
   }
 
   #handleModeChange = () => {
+    this.#newPointPresenter.destroy();
     this.#pointPresenters.forEach((presenter) => presenter.resetView());
   };
 
@@ -148,6 +164,7 @@ export default class TripPresenter {
   }
 
   #clearTrip({resetSortType = false} = {}) {
+    this.#newPointPresenter.destroy();
     this.#pointPresenters.forEach((presenter) => presenter.destroy());
     this.#pointPresenters.clear();
 

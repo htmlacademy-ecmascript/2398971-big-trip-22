@@ -46,11 +46,10 @@ function generateRandomDateInterval () {
 
 const dateMocks = generateRandomDateInterval();
 
-const createPoint = (idPoint, idOffer) => {
+const createPoint = (idOffer) => {
   const randomDate = dateMocks();
 
   return {
-    //id: `f4b62099-293f-4c3d-a702-94eec4a2808c${idPoint}`,
     basePrice: Math.floor(Math.random() * POINT_MAX_PRICE),
     dateFrom: randomDate.dateFrom,
     dateTo: randomDate.dateTo,
@@ -61,13 +60,13 @@ const createPoint = (idPoint, idOffer) => {
   };
 };
 
-const generatePoint = (idPoint) => {
+const generatePoint = () => {
   const randomPointId = getRandomInteger (0, mockOffers.length - 1);
 
-  return createPoint(idPoint, randomPointId);
+  return createPoint(randomPointId);
 };
 
-const pointsMock = Array.from({length : POINTS__MAX_COUNT},(_,index) => generatePoint(index + 1));
+const pointsMock = Array.from({length : POINTS__MAX_COUNT},() => generatePoint());
 
 function getRandomPoint() {
   return {

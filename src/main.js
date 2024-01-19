@@ -1,10 +1,10 @@
-import { render } from './framework/render.js';
 import TripPresenter from './presenter/trip-presenter.js';
 import FilterPresenter from './presenter/filter-presenter.js';
 import PointsModel from './model/points-model.js';
 import OffersModel from './model/offers-model.js';
 import DestinationsModel from './model/destinations-model.js';
 import FilterModel from './model/filter-model.js';
+import NewPointButtonView from './view/new-point-button-view.js';
 
 const siteHeaderElement = document.querySelector('.page-header');
 const siteFilterElement = siteHeaderElement.querySelector('.trip-controls__filters');
@@ -27,7 +27,21 @@ const tripPresenter = new TripPresenter({
   offersModel,
   destinationsModel,
   filterModel,
+  onNewPointDestroy: handleNewPointFormClose,
 });
+
+const newPointButtonComponent = new NewPointButtonView({
+  onClick: handleNewPointButtonClick
+});
+
+function handleNewPointFormClose() {
+  newPointButtonComponent.template.disabled = false;
+}
+
+function handleNewPointButtonClick() {
+  tripPresenter.createPoint();
+  newPointButtonComponent.template.disabled = true;
+}
 
 filterPresenter.init();
 tripPresenter.init();
