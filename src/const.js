@@ -2,6 +2,7 @@ const POINT_TYPES = ['taxi', 'bus', 'train', 'ship', 'drive', 'flight', 'check-i
 const DESTINATIONS = ['Amsterdam', 'Geneva', 'Chamonix', 'Berlin', 'Paris', 'London'];
 const OFFERS = ['Add luggage', 'Switch to comfort class', 'Add meal', 'Travel by train', 'Service 1', 'Service 2','Service 3','Service 4','Service 5','Service 6','Service 7','Service 8',];
 const DESCRIPTIONS = [
+  '',
   'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
   'Cras aliquet varius magna, non porta ligula feugiat eget.',
   ' Fusce tristique felis at fermentum pharetra.',

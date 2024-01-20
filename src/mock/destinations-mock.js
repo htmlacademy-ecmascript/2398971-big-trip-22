@@ -11,7 +11,7 @@ const createDestinationUrl = (id) => (
 const createDestination = (id) => (
   {
     id: `bfa5cb75-a1fe-4b77-a83c-0e528e910e${id}`,
-    description: DESCRIPTIONS[getRandomInteger (1, DESCRIPTIONS.length - 1)],
+    description: DESCRIPTIONS[getRandomInteger (0, DESCRIPTIONS.length - 1)],
     name: DESTINATIONS[id - 1],
     pictures: Array.from({length : Math.floor(Math.random() * PICTURE_MAX)},(_,index) => createDestinationUrl(index + 1))
   }

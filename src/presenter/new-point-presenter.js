@@ -26,7 +26,7 @@ export default class NewPointPresenter {
       basePrice: 0,
       dateFrom: dayjs().$d,
       dateTo: dayjs().$d,
-      destination: this.#allDestinations[0].id,
+      destination: '',
       isFavorite: false,
       offers: [],
       type: 'flight'
@@ -85,16 +85,4 @@ export default class NewPointPresenter {
       this.destroy();
     }
   };
-
-  #getDefaultPoint() {
-    return {
-      basePrice: 0,
-      dateFrom: dayjs().$d,
-      dateTo: this.dateFrom,
-      destination: this.#allDestinations[0].id,
-      isFavorite: false,
-      offers: [],
-      type: 'Flight'
-    };
-  }
 }
