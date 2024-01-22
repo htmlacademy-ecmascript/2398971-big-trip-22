@@ -155,7 +155,10 @@ export default class TripPresenter {
   }
 
   #renderTripInfo() {
-    this.#tripInfoComponent = new TripInfoView();
+    this.#tripInfoComponent = new TripInfoView({
+      eventPoint: this.#pointsModel.points.sort(sortPointDay),
+      allDestinations: this.#allDestinations
+    });
     render(this.#tripInfoComponent, siteTripMainElement, RenderPosition.AFTERBEGIN);
   }
 

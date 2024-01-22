@@ -18,6 +18,8 @@ const DESCRIPTIONS = [
 const DATE_FORMAT = {
   datMonth: 'D MMM',
   minute: 'mm',
+  month: 'MM',
+  day: 'DD',
   time: 'HH:mm',
   date: 'DD HH:mm',
   fullDate: 'DD/MM/YY HH:mm'
