@@ -35,6 +35,7 @@ const newPointButtonComponent = new NewPointButtonView({
 });
 
 function handleNewPointFormClose() {
+  tripPresenter.renderNoPoints();
   newPointButtonComponent.template.disabled = false;
 }
 

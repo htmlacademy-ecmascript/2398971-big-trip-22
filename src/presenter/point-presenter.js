@@ -1,13 +1,8 @@
 import { render, replace, remove } from '../framework/render.js';
 import EventPointView from '../view/event-point-view.js';
 import EditingEventView from '../view/event-editing-view.js';
-import { UserAction, UpdateType } from '../const.js';
+import { UserAction, UpdateType, Mode } from '../const.js';
 import { isMinorUpdate } from '../utils/point.js';
-
-const Mode = {
-  DEFAULT: 'DEFAULT',
-  EDITING: 'EDITING',
-};
 
 export default class PointPresenter {
   #eventListComponent = null;
@@ -53,6 +48,7 @@ export default class PointPresenter {
       onEditClick: this.#handleCloseClick,
       onFormSubmit: this.#handleFormSubmit,
       onDeleteClick: this.#handleDeleteClick,
+      mode: Mode.EDITING,
     });
 
     if (prevPointComponent === null || prevPointEditComponent === null) {
@@ -64,7 +60,7 @@ export default class PointPresenter {
       replace(this.#eventPointComponent, prevPointComponent);
     }
 
-    if (this.#mode === Mode.EDITING) {
+    if (this.#mode === Mode.EDITING || Mode.ADDITION) {
       replace(this.#eventEditComponent, prevPointEditComponent);
     }
 

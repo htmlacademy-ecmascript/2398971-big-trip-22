@@ -1,7 +1,7 @@
 import {remove, render, RenderPosition} from '../framework/render.js';
 import EditingEventView from '../view/event-editing-view.js';
 import {nanoid} from 'nanoid';
-import {UserAction, UpdateType} from '../const.js';
+import {UserAction, UpdateType, Mode} from '../const.js';
 import dayjs from 'dayjs';
 
 export default class NewPointPresenter {
@@ -11,7 +11,7 @@ export default class NewPointPresenter {
   #eventPoint = null;
   #allOffers = null;
   #allDestinations = null;
-
+  #mode = null;
 
   #pointEditComponent = null;
 
@@ -43,7 +43,8 @@ export default class NewPointPresenter {
       allOffers: this.#allOffers,
       allDestinations:this.#allDestinations,
       onFormSubmit: this.#handleFormSubmit,
-      onDeleteClick: this.#handleDeleteClick
+      onDeleteClick: this.#handleDeleteClick,
+      mode: Mode.ADDITION,
     });
 
     render(this.#pointEditComponent, this.#pointListContainer, RenderPosition.AFTERBEGIN);

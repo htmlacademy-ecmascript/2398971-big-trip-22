@@ -63,6 +63,6 @@ export default class TripInfoView extends AbstractView {
 
   #getPriceText () {
 
-    return this.#eventPoint.reduce((a, b) => a + b.basePrice, 0);
+    return this.#eventPoint.reduce((a, b) => a + Number(b.basePrice), 0);
   }
 }

@@ -76,6 +76,12 @@ const UpdateType = {
   MAJOR: 'MAJOR',
 };
 
+const Mode = {
+  DEFAULT: 'DEFAULT',
+  EDITING: 'EDITING',
+  ADDITION: 'ADDITION',
+};
+
 export {
   POINT_TYPES,
   DESTINATIONS,
@@ -92,6 +98,7 @@ export {
   SortType,
   UserAction,
   UpdateType,
+  Mode,
 };
 
 

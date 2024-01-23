@@ -1,6 +1,6 @@
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import { humanizeTaskDueDate } from '../utils/point.js';
-import { DATE_FORMAT} from '../const.js';
+import { DATE_FORMAT, Mode} from '../const.js';
 import flatpickr from 'flatpickr';
 import he from 'he';
 
@@ -65,7 +65,7 @@ function createHeaderEventPrice (eventPoint) {
         <span class="visually-hidden">Price</span>
         &euro;
       </label>
-      <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${he.encode(String(eventPoint.basePrice))}">
+      <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${he.encode(String(eventPoint.basePrice))}" pattern="[0-9]*" required>
     </div>`;
 }
 
@@ -106,23 +106,19 @@ function createSectionDestination(eventDestination) {
     </section>`;
 }
 
-function createHeaderEditingEventTemplate (eventPoint, allOffers, allDestinations) {
+function createHeaderEditingEventTemplate (eventPoint, allOffers, allDestinations, mode) {
 
   return `
     <header class="event__header">
       <div class="event__type-wrapper">
         ${createHeaderEventTypeList(eventPoint, allOffers)}
       </div>
-
-      ${createHeaderEventDestination(eventPoint, allDestinations)}
-
-      ${createHeaderEventTime(eventPoint)}
-
-      ${createHeaderEventPrice(eventPoint)}
-
+        ${createHeaderEventDestination(eventPoint, allDestinations)}
+        ${createHeaderEventTime(eventPoint)}
+        ${createHeaderEventPrice(eventPoint)}
       <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
       <button class="event__reset-btn" type="reset">Delete</button>
-      <button class="event__rollup-btn" type="button">
+      ${mode === Mode.EDITING ? '<button class="event__rollup-btn" type="button">' : ''}
         <span class="visually-hidden">Open event</span>
       </button>
     </header>`;
@@ -132,20 +128,20 @@ function createSectionEditingEventTemplate (eventPoint, allOffers, allDestinatio
   const eventOffers = allOffers.find((element)=> element.type === eventPoint.type);
   const eventDestination = allDestinations.find((element)=> element.id === eventPoint.destination);
 
-  if (eventPoint.destination !== '' && eventPoint.destination !== undefined ? (eventOffers.offers.length === 0 && eventDestination.description === '') : false) {
-    return '';
-  }
-
-  return `
+  if (eventOffers.offers.length !== 0 || (eventDestination !== undefined && (eventDestination?.description || eventDestination?.pictures.length !== 0))) {
+    return `
     <section class="event__details">
       ${eventOffers.offers.length !== 0 ? createSectionOffers(eventPoint, eventOffers) : ''}
-      ${(eventPoint.destination !== '' && eventPoint.destination !== undefined ? (eventDestination.description !== '' || eventPoint.destination !== '') : false) ? createSectionDestination(eventDestination) : '' }
-  </section>`;
+      ${(eventDestination?.description || eventDestination?.pictures.length !== 0) && eventPoint.destination ? createSectionDestination(eventDestination) : '' }
+    </section>`;
+  } else {
+    return '';
+  }
 }
 
-function createEditingEventTemplate({eventPoint, allOffers, allDestinations}) {
+function createEditingEventTemplate({eventPoint, allOffers, allDestinations, mode}) {
 
-  const headerEditingEventTemplate = createHeaderEditingEventTemplate(eventPoint, allOffers, allDestinations);
+  const headerEditingEventTemplate = createHeaderEditingEventTemplate(eventPoint, allOffers, allDestinations, mode);
   const SectionEditingEventTemplate = createSectionEditingEventTemplate(eventPoint, allOffers, allDestinations);
 
   return `<li class="trip-events__item">
@@ -163,8 +159,9 @@ export default class EditingEventView extends AbstractStatefulView {
   #handleFormSubmit = null;
   #handleDeleteClick = null;
   #datepicker = null;
+  #mode = null;
 
-  constructor({eventPoint, allOffers, allDestinations, onEditClick, onFormSubmit, onDeleteClick}) {
+  constructor({eventPoint, allOffers, allDestinations, onEditClick, onFormSubmit, onDeleteClick, mode}) {
     super();
     this._setState(EditingEventView.parsePointToState(eventPoint));
     this.#allOffers = allOffers;
@@ -172,6 +169,7 @@ export default class EditingEventView extends AbstractStatefulView {
     this.#handleFormSubmit = onFormSubmit;
     this.#handleDeleteClick = onDeleteClick;
     this.#handleEditClick = onEditClick;
+    this.#mode = mode;
 
     this._restoreHandlers();
   }
@@ -181,7 +179,8 @@ export default class EditingEventView extends AbstractStatefulView {
     return createEditingEventTemplate({
       eventPoint: this._state,
       allOffers: this.#allOffers,
-      allDestinations: this.#allDestinations
+      allDestinations: this.#allDestinations,
+      mode: this.#mode,
     }
     );
   }
@@ -202,17 +201,20 @@ export default class EditingEventView extends AbstractStatefulView {
   }
 
   _restoreHandlers() {
-    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#closeEditClickHandler);
+    const availableOffers = this.element.querySelector('.event__available-offers');
+
     this.element.querySelector('form').addEventListener('submit', this.#formSubmitHandler);
     this.element.querySelector('.event__type-list').addEventListener('change', this.#eventTypeToggleHandler);
     this.element.querySelector('.event__input--destination').addEventListener('change', this.#eventDestinationToggleHandler);
     this.element.querySelector('.event__input--price').addEventListener('change', this.#eventPriceToggleHandler);
     this.element.querySelector('.event__reset-btn').addEventListener('click', this.#formDeleteClickHandler);
 
-    const availableOffers = this.element.querySelector('.event__available-offers');
-
     if (availableOffers !== null) {
       availableOffers.addEventListener('change', this.#eventoffersToggleHandler);
+    }
+
+    if(this.#mode === Mode.EDITING) {
+      this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#closeEditClickHandler);
     }
 
     this.#setDatepicker();
