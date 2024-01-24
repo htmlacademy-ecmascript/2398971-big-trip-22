@@ -1,11 +1,8 @@
 import { render, replace, remove } from '../framework/render.js';
 import EventPointView from '../view/event-point-view.js';
 import EditingEventView from '../view/event-editing-view.js';
-
-const Mode = {
-  DEFAULT: 'DEFAULT',
-  EDITING: 'EDITING',
-};
+import { UserAction, UpdateType, Mode } from '../const.js';
+import { isMinorUpdate } from '../utils/point.js';
 
 export default class PointPresenter {
   #eventListComponent = null;
@@ -50,6 +47,8 @@ export default class PointPresenter {
       allDestinations: this.#allDestinations,
       onEditClick: this.#handleCloseClick,
       onFormSubmit: this.#handleFormSubmit,
+      onDeleteClick: this.#handleDeleteClick,
+      mode: Mode.EDITING,
     });
 
     if (prevPointComponent === null || prevPointEditComponent === null) {
@@ -61,7 +60,7 @@ export default class PointPresenter {
       replace(this.#eventPointComponent, prevPointComponent);
     }
 
-    if (this.#mode === Mode.EDITING) {
+    if (this.#mode === Mode.EDITING || Mode.ADDITION) {
       replace(this.#eventEditComponent, prevPointEditComponent);
     }
 
@@ -114,12 +113,28 @@ export default class PointPresenter {
   };
 
   #handleFavoriteClick = () => {
-    this.#handleDataChange({...this.#eventPoint, isFavorite: !this.#eventPoint.isFavorite});
+    this.#handleDataChange(
+      UserAction.UPDATE_POINT,
+      UpdateType.MINOR,
+      {...this.#eventPoint, isFavorite: !this.#eventPoint.isFavorite}
+    );
   };
 
-  #handleFormSubmit = (eventPoint) => {
-    this.#handleDataChange(eventPoint);
+  #handleFormSubmit = (update) => {
+    this.#handleDataChange(
+      UserAction.UPDATE_POINT,
+      isMinorUpdate (update, this.#eventPoint) ? UpdateType.MINOR : UpdateType.PATCH,
+      update,
+    );
     this.#replaceFormToPoint();
     document.removeEventListener('keydown', this.#escKeyDownHandler);
+  };
+
+  #handleDeleteClick = (eventPoint) => {
+    this.#handleDataChange(
+      UserAction.DELETE_POINT,
+      UpdateType.MINOR,
+      eventPoint,
+    );
   };
 }

@@ -1,7 +1,8 @@
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import { humanizeTaskDueDate } from '../utils/point.js';
-import { DATE_FORMAT } from '../const.js';
+import { DATE_FORMAT, Mode} from '../const.js';
 import flatpickr from 'flatpickr';
+import he from 'he';
 
 import 'flatpickr/dist/flatpickr.min.css';
 
@@ -36,7 +37,7 @@ function createHeaderEventDestination (eventPoint, allDestinations) {
     <label class="event__label  event__type-output" for="event-destination-1">
       ${eventPoint.type}
     </label>
-    <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${eventDestination.name}" list="destination-list-1">
+    <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${eventDestination ? he.encode(eventDestination.name) : ''}" list="destination-list-1" required>
     <datalist id="destination-list-1">
       ${allDestinations.map((destination) => `
       <option value="${destination.name}"></option>`).join('')}
@@ -64,13 +65,11 @@ function createHeaderEventPrice (eventPoint) {
         <span class="visually-hidden">Price</span>
         &euro;
       </label>
-      <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${eventPoint.basePrice}">
+      <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${he.encode(String(eventPoint.basePrice))}" pattern="[0-9]*" required>
     </div>`;
 }
 
-function createSectionOffers (eventPoint, allOffers) {
-
-  const eventOffers = allOffers.find((element)=> element.type === eventPoint.type);
+function createSectionOffers (eventPoint, eventOffers) {
 
   return `
     <section class="event__section  event__section--offers">
@@ -87,55 +86,62 @@ function createSectionOffers (eventPoint, allOffers) {
           </label>
         </div>`).join('')}
       </div>
-    </section>
-  `;
+    </section>`;
 }
 
-function createSectionDestination(eventPoint, allDestinations) {
-  const eventDestination = allDestinations.find((element)=> element.id === eventPoint.destination);
+function createSectionDestination(eventDestination) {
 
   return `
     <section class="event__section  event__section--destination">
       <h3 class="event__section-title  event__section-title--destination">Destination</h3>
       <p class="event__destination-description">${eventDestination.description}</p>
-    </section>
-  `;
+
+      ${eventDestination.pictures.length > 0 ? `<div class="event__photos-container">
+        <div class="event__photos-tape">
+          ${eventDestination.pictures.map((picture) =>`
+          <img class="event__photo" src=${picture.src} alt="Event photo">`).join('')}
+        </div>
+      </div>` : ''}
+
+    </section>`;
 }
 
-function createHeaderEditingEventTemplate (eventPoint, allOffers, allDestinations) {
+function createHeaderEditingEventTemplate (eventPoint, allOffers, allDestinations, mode) {
 
   return `
     <header class="event__header">
       <div class="event__type-wrapper">
         ${createHeaderEventTypeList(eventPoint, allOffers)}
       </div>
-
-      ${createHeaderEventDestination(eventPoint, allDestinations)}
-
-      ${createHeaderEventTime(eventPoint)}
-
-      ${createHeaderEventPrice(eventPoint)}
-
+        ${createHeaderEventDestination(eventPoint, allDestinations)}
+        ${createHeaderEventTime(eventPoint)}
+        ${createHeaderEventPrice(eventPoint)}
       <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
       <button class="event__reset-btn" type="reset">Delete</button>
-      <button class="event__rollup-btn" type="button">
+      ${mode === Mode.EDITING ? '<button class="event__rollup-btn" type="button">' : ''}
         <span class="visually-hidden">Open event</span>
       </button>
     </header>`;
 }
 
 function createSectionEditingEventTemplate (eventPoint, allOffers, allDestinations) {
+  const eventOffers = allOffers.find((element)=> element.type === eventPoint.type);
+  const eventDestination = allDestinations.find((element)=> element.id === eventPoint.destination);
 
-  return `
+  if (eventOffers.offers.length !== 0 || (eventDestination !== undefined && (eventDestination?.description || eventDestination?.pictures.length !== 0))) {
+    return `
     <section class="event__details">
-      ${createSectionOffers(eventPoint, allOffers)}
-      ${createSectionDestination(eventPoint, allDestinations)}
-  </section>`;
+      ${eventOffers.offers.length !== 0 ? createSectionOffers(eventPoint, eventOffers) : ''}
+      ${(eventDestination?.description || eventDestination?.pictures.length !== 0) && eventPoint.destination ? createSectionDestination(eventDestination) : '' }
+    </section>`;
+  } else {
+    return '';
+  }
 }
 
-function createEditingEventTemplate({eventPoint, allOffers, allDestinations}) {
+function createEditingEventTemplate({eventPoint, allOffers, allDestinations, mode}) {
 
-  const headerEditingEventTemplate = createHeaderEditingEventTemplate(eventPoint, allOffers, allDestinations);
+  const headerEditingEventTemplate = createHeaderEditingEventTemplate(eventPoint, allOffers, allDestinations, mode);
   const SectionEditingEventTemplate = createSectionEditingEventTemplate(eventPoint, allOffers, allDestinations);
 
   return `<li class="trip-events__item">
@@ -151,24 +157,30 @@ export default class EditingEventView extends AbstractStatefulView {
   #allDestinations = null;
   #handleEditClick = null;
   #handleFormSubmit = null;
+  #handleDeleteClick = null;
   #datepicker = null;
+  #mode = null;
 
-  constructor({eventPoint, allOffers, allDestinations, onEditClick, onFormSubmit}) {
+  constructor({eventPoint, allOffers, allDestinations, onEditClick, onFormSubmit, onDeleteClick, mode}) {
     super();
     this._setState(EditingEventView.parsePointToState(eventPoint));
     this.#allOffers = allOffers;
     this.#allDestinations = allDestinations;
     this.#handleFormSubmit = onFormSubmit;
+    this.#handleDeleteClick = onDeleteClick;
     this.#handleEditClick = onEditClick;
+    this.#mode = mode;
 
     this._restoreHandlers();
   }
 
   get template() {
+
     return createEditingEventTemplate({
       eventPoint: this._state,
       allOffers: this.#allOffers,
-      allDestinations: this.#allDestinations
+      allDestinations: this.#allDestinations,
+      mode: this.#mode,
     }
     );
   }
@@ -189,12 +201,21 @@ export default class EditingEventView extends AbstractStatefulView {
   }
 
   _restoreHandlers() {
-    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#closeEditClickHandler);
+    const availableOffers = this.element.querySelector('.event__available-offers');
+
     this.element.querySelector('form').addEventListener('submit', this.#formSubmitHandler);
     this.element.querySelector('.event__type-list').addEventListener('change', this.#eventTypeToggleHandler);
     this.element.querySelector('.event__input--destination').addEventListener('change', this.#eventDestinationToggleHandler);
     this.element.querySelector('.event__input--price').addEventListener('change', this.#eventPriceToggleHandler);
-    this.element.querySelector('.event__available-offers').addEventListener('change', this.#eventoffersToggleHandler);
+    this.element.querySelector('.event__reset-btn').addEventListener('click', this.#formDeleteClickHandler);
+
+    if (availableOffers !== null) {
+      availableOffers.addEventListener('change', this.#eventoffersToggleHandler);
+    }
+
+    if(this.#mode === Mode.EDITING) {
+      this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#closeEditClickHandler);
+    }
 
     this.#setDatepicker();
   }
@@ -277,7 +298,13 @@ export default class EditingEventView extends AbstractStatefulView {
     );
   }
 
+  #formDeleteClickHandler = (evt) => {
+    evt.preventDefault();
+    this.#handleDeleteClick(EditingEventView.parseStateToPoint(this._state));
+  };
+
   static parsePointToState(eventPoint) {
+
     return {...eventPoint,
       type: eventPoint.type,
       destination: eventPoint.destination,
@@ -292,8 +319,13 @@ export default class EditingEventView extends AbstractStatefulView {
   }
 
   #getDestinationById(destinationId) {
+    const destination = this.#allDestinations.find((element)=> element.name === destinationId);
 
-    return this.#allDestinations.find((element)=> element.name === destinationId);
+    if (destination === undefined) {
+      return '';
+    }
+
+    return destination;
   }
 
   #getOffersByType(type) {

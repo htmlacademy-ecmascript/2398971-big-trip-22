@@ -1,18 +1,18 @@
 import AbstractView from '../framework/view/abstract-view.js';
 
-function createFilterItemTemplate(filter, isChecked) {
+function createFilterItemTemplate(filter, currentFilterType) {
   const {type, count} = filter;
 
   return `
   <div class="trip-filters__filter">
-    <input id="filter-${type}" class="trip-filters__filter-input  visually-hidden" type="radio" name="trip-filter" value="${type}"  ${isChecked ? 'checked' : ''} ${count === 0 ? 'disabled' : ''}>
+    <input id="filter-${type}" class="trip-filters__filter-input  visually-hidden" type="radio" name="trip-filter" value="${type}"  ${type === currentFilterType ? 'checked' : ''} ${count === 0 ? 'disabled' : ''}>
     <label class="trip-filters__filter-label" for="filter-${type}">${type}</label>
   </div>`;
 }
 
-function createFilterListTemplate(filterItems) {
+function createFilterListTemplate(filterItems, currentFilterType) {
   const filterItemsTemplate = filterItems
-    .map((filter, index) => createFilterItemTemplate(filter, index === 0))
+    .map((filter) => createFilterItemTemplate(filter, currentFilterType))
     .join('');
 
   return `
@@ -24,24 +24,28 @@ function createFilterListTemplate(filterItems) {
 
 export default class FilterView extends AbstractView {
   #filters = null;
+  #currentFilter = null;
+  #handleFilterTypeChange = null;
 
-  constructor({filters}) {
+  constructor({filters, currentFilterType, onFilterTypeChange}) {
     super();
     this.#filters = filters;
+    this.#currentFilter = currentFilterType;
+    this.#handleFilterTypeChange = onFilterTypeChange;
 
-    Array.from(
-      {length : this.element.querySelectorAll('.trip-filters__filter-input').length},
-      (_,index) => this.element.querySelectorAll('.trip-filters__filter-input')[index].addEventListener('change', this.#switchFilter));
+    // Array.from(
+    //   {length : this.element.querySelectorAll('.trip-filters__filter-input').length},
+    //   (_,index) => this.element.querySelectorAll('.trip-filters__filter-input')[index].addEventListener('change', this.#filterTypeChangeHandler));
+    this.element.addEventListener('change', this.#filterTypeChangeHandler);
   }
 
   get template() {
-    return createFilterListTemplate(this.#filters);
+    return createFilterListTemplate(this.#filters, this.#currentFilter);
   }
 
-  #switchFilter = (evt) => {
+  #filterTypeChangeHandler = (evt) => {
     evt.preventDefault();
-    // eslint-disable-next-line no-console
-    console.log(evt.target);
+    this.#handleFilterTypeChange(evt.target.value);
 
   };
 
