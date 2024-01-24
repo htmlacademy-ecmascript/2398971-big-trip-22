@@ -51,7 +51,8 @@ const isMinorUpdate = (updatedPoint, oldPoint) => {
   returnDateDuration(updatedPoint.dateFrom, updatedPoint.dateTo) !== returnDateDuration(oldPoint.dateFrom, oldPoint.dateTo) ||
   humanizeTaskDueDate(updatedPoint.dateFrom, DATE_FORMAT.time) !== humanizeTaskDueDate(oldPoint.dateFrom, DATE_FORMAT.time) ||
   humanizeTaskDueDate(updatedPoint.dateTo, DATE_FORMAT.time) !== humanizeTaskDueDate(oldPoint.dateTo, DATE_FORMAT.time) ||
-  updatedPoint.basePrice !== oldPoint.basePrice;
+  updatedPoint.basePrice !== oldPoint.basePrice ||
+  updatedPoint.destination !== oldPoint.destination;
 
   return isMinor;
 };

@@ -44,10 +44,26 @@ export default class TripInfoView extends AbstractView {
   }
 
   #getDestinationText () {
-    const distance = this.#eventPoint.map((element) => this.#getDestinationById(element.destination).name).reverse();
-    const startPoint = distance[0];
-    const endPoint = distance[distance.length - 1];
-    return `${startPoint} &mdash; ... &mdash; ${endPoint}`;
+    const fullDistance = this.#eventPoint.map((element) => this.#getDestinationById(element.destination).name).reverse();
+    const distance = [];
+    let previousPoint = null;
+    let currentPoint = null;
+
+    fullDistance.forEach((point) => {
+      currentPoint = point;
+
+      if (currentPoint !== previousPoint) {
+        distance.push(currentPoint);
+      }
+
+      previousPoint = point;
+    });
+
+    const startPoint = fullDistance[0];
+    const middlePoints = distance.slice(1,-1);
+    const endPoint = fullDistance[fullDistance.length - 1];
+
+    return `${startPoint} &mdash; ${middlePoints.length !== 1 ? '...' : middlePoints[0] } &mdash; ${endPoint}`;
   }
 
   #getDurationText () {

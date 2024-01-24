@@ -202,13 +202,6 @@ export default class TripPresenter {
 
     render(this.#eventListComponent, this.#pointContainer);
     this.#renderPoints(this.points);
-
-    // if (this.#pointsModel.points.length <= 0) {
-    //   console.log(this.#filterType);
-    //   this.#filterType = FilterType.EVERYTHING;
-    //   console.log(this.#filterType);
-    // }
-
     this.renderNoPoints();
   }
 }
