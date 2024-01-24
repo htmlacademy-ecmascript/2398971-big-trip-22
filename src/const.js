@@ -40,7 +40,7 @@ const POINT_MAX_PRICE = 1000;
 const POINTS__MAX_COUNT = 10;
 const PICTURE_MAX = 5;
 
-const noPointMassages = {
+const NoPointMassages = {
   LOAD_FAIL: 'Failed to load latest route information',
   LOADING: 'Loading...',
   EVERYTHING: 'Click New Event to create your first point',
@@ -93,7 +93,7 @@ export {
   POINT_MAX_PRICE,
   POINTS__MAX_COUNT,
   PICTURE_MAX,
-  noPointMassages,
+  NoPointMassages,
   FilterType,
   SortType,
   UserAction,

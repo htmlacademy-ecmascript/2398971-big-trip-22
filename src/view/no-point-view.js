@@ -1,11 +1,11 @@
 import AbstractView from '../framework/view/abstract-view.js';
-import { FilterType, noPointMassages } from '../const.js';
+import { FilterType, NoPointMassages } from '../const.js';
 
 const NoTasksTextType = {
-  [FilterType.EVERYTHING]: noPointMassages.EVERYTHING,
-  [FilterType.PAST]: noPointMassages.PAST,
-  [FilterType.PRESENT]: noPointMassages.PRESENT,
-  [FilterType.FUTURE]: noPointMassages.FUTURE,
+  [FilterType.EVERYTHING]: NoPointMassages.EVERYTHING,
+  [FilterType.PAST]: NoPointMassages.PAST,
+  [FilterType.PRESENT]: NoPointMassages.PRESENT,
+  [FilterType.FUTURE]: NoPointMassages.FUTURE,
 };
 
 function createNoPointTemplate(filterType) {
