@@ -60,3 +60,6 @@ function handleNewPointButtonClick (evt) {
 
 filterPresenter.init();
 tripPresenter.init();
+pointsModel.init();
+offersModel.init();
+destinationsModel.init();

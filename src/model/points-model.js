@@ -1,23 +1,25 @@
 import Observable from '../framework/observable.js';
-import { getRandomPoint } from '../mock/points-mock.js';
-import { POINTS__MAX_COUNT } from '../const.js';
-
 
 export default class PointsModel extends Observable {
   #pointsApiService = null;
-  #points = Array.from({length: POINTS__MAX_COUNT}, () => getRandomPoint());
+  #points = [];
 
   constructor({pointsApiService}) {
     super();
     this.#pointsApiService = pointsApiService;
-
-    this.#pointsApiService.points.then((points) => {
-      console.log(points.map(this.#adaptPointToClient));
-    });
   }
 
   get points() {
     return this.#points;
+  }
+
+  async init() {
+    try {
+      const points = await this.#pointsApiService.points;
+      this.#points = points.map(this.#adaptPointToClient);
+    } catch(err) {
+      this.#points = [];
+    }
   }
 
   updateEventPoint(updateType, update) {
@@ -68,7 +70,6 @@ export default class PointsModel extends Observable {
       isFavorite: point['is_favorite'],
     };
 
-    // Ненужные ключи мы удаляем
     delete adaptedPoint['base_price'];
     delete adaptedPoint['date_from'];
     delete adaptedPoint['date_to'];
@@ -76,5 +77,4 @@ export default class PointsModel extends Observable {
 
     return adaptedPoint;
   }
-
 }
