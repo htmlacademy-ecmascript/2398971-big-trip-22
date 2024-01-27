@@ -14,7 +14,6 @@ const siteFilterElement = siteHeaderElement.querySelector('.trip-controls__filte
 const siteEventsElement = document.querySelector('.trip-events');
 const newPointButtonElement = document.querySelector('.trip-main__event-add-btn');
 
-newPointButtonElement.addEventListener('click', handleNewPointButtonClick);
 newPointButtonElement.setAttribute('disabled', 'disabled');
 
 const pointsApiService = new TripApiService(END_POINT, AUTHORIZATION);
@@ -67,4 +66,5 @@ tripPresenter.init();
 await pointsModel.init()
   .finally(() => {
     newPointButtonElement.removeAttribute('disabled');
+    newPointButtonElement.addEventListener('click', handleNewPointButtonClick);
   });
