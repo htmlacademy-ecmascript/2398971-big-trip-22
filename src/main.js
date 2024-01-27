@@ -28,9 +28,12 @@ const offersModel = new OffersModel({
 
 const destinationsModel = new DestinationsModel({
   pointsApiService: pointsApiService,
-}
-);
+});
+
 const filterModel = new FilterModel();
+
+await offersModel.init();
+await destinationsModel.init();
 
 const filterPresenter = new FilterPresenter({
   filterContainer: siteFilterElement,
@@ -60,6 +63,4 @@ function handleNewPointButtonClick (evt) {
 
 filterPresenter.init();
 tripPresenter.init();
-pointsModel.init();
-offersModel.init();
-destinationsModel.init();
+await pointsModel.init();

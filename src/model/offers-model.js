@@ -7,6 +7,7 @@ export default class OffersModel {
   }
 
   get offers() {
+    //console.log(this.#offers);
     return this.#offers;
   }
 
