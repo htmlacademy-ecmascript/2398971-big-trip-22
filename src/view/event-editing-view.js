@@ -117,7 +117,7 @@ function createHeaderEditingEventTemplate (eventPoint, allOffers, allDestination
         ${createHeaderEventPrice(eventPoint, isDisabled)}
       <button class="event__save-btn  btn  btn--blue" type="submit">${isSaving ? 'Saving...' : 'Save'}</button>
       <button class="event__reset-btn" type="reset">${isDeleting ? 'Deleting...' : 'Delete'}</button>
-      ${mode === Mode.EDITING ? '<button class="event__rollup-btn" type="button">' : ''}
+      ${mode === Mode.EDITING ? `<button class="event__rollup-btn" type="button" ${isDisabled ? 'disabled' : ''}>` : ''}
         <span class="visually-hidden">Open event</span>
       </button>
     </header>`;
