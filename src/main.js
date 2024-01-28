@@ -6,7 +6,7 @@ import DestinationsModel from './model/destinations-model.js';
 import FilterModel from './model/filter-model.js';
 import TripApiService from './trip-api-service.js';
 
-const AUTHORIZATION = 'Basic 6qhV9vVREMsa4yJabIeo';
+const AUTHORIZATION = 'Basic 6qhV9vVREMsa4yJabIe';
 const END_POINT = 'https://22.objects.htmlacademy.pro/big-trip';
 
 const siteHeaderElement = document.querySelector('.page-header');
