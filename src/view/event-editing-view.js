@@ -6,14 +6,14 @@ import he from 'he';
 
 import 'flatpickr/dist/flatpickr.min.css';
 
-function createHeaderEventTypeList (eventPoint, allOffers) {
+function createHeaderEventTypeList (eventPoint, allOffers, isDisabled) {
 
   return `
     <label class="event__type  event__type-btn" for="event-type-toggle-1">
       <span class="visually-hidden">Choose event type</span>
         <img class="event__type-icon" width="17" height="17" src="img/icons/${eventPoint.type}.png" alt="Event type icon">
     </label>
-    <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox">
+    <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox" ${isDisabled ? 'disabled' : ''}>
 
     <div class="event__type-list">
       <fieldset class="event__type-group">
@@ -29,7 +29,7 @@ function createHeaderEventTypeList (eventPoint, allOffers) {
     </div>`;
 }
 
-function createHeaderEventDestination (eventPoint, allDestinations) {
+function createHeaderEventDestination (eventPoint, allDestinations, isDisabled) {
   const eventDestination = allDestinations.find((element)=> element.id === eventPoint.destination);
 
   return `
@@ -37,7 +37,7 @@ function createHeaderEventDestination (eventPoint, allDestinations) {
     <label class="event__label  event__type-output" for="event-destination-1">
       ${eventPoint.type}
     </label>
-    <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${eventDestination ? he.encode(eventDestination.name) : ''}" list="destination-list-1" required>
+    <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${eventDestination ? he.encode(eventDestination.name) : ''}" list="destination-list-1" required ${isDisabled ? 'disabled' : ''}>
     <datalist id="destination-list-1">
       ${allDestinations.map((destination) => `
       <option value="${destination.name}"></option>`).join('')}
@@ -45,19 +45,19 @@ function createHeaderEventDestination (eventPoint, allDestinations) {
   </div>`;
 }
 
-function createHeaderEventTime (eventPoint) {
+function createHeaderEventTime (eventPoint, isDisabled) {
 
   return `
     <div class="event__field-group  event__field-group--time">
       <label class="visually-hidden" for="event-start-time-1">From</label>
-      <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${humanizeTaskDueDate(eventPoint.dateFrom,DATE_FORMAT.fullDate)}">
+      <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${humanizeTaskDueDate(eventPoint.dateFrom,DATE_FORMAT.fullDate)}" ${isDisabled ? 'disabled' : ''}>
       &mdash;
       <label class="visually-hidden" for="event-end-time-1">To</label>
-      <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${humanizeTaskDueDate(eventPoint.dateTo,DATE_FORMAT.fullDate)}">
+      <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${humanizeTaskDueDate(eventPoint.dateTo,DATE_FORMAT.fullDate)}" ${isDisabled ? 'disabled' : ''}>
     </div>`;
 }
 
-function createHeaderEventPrice (eventPoint) {
+function createHeaderEventPrice (eventPoint, isDisabled) {
 
   return `
     <div class="event__field-group  event__field-group--price">
@@ -65,12 +65,11 @@ function createHeaderEventPrice (eventPoint) {
         <span class="visually-hidden">Price</span>
         &euro;
       </label>
-      <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${he.encode(String(eventPoint.basePrice))}" pattern="[0-9]*" required>
+      <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${he.encode(String(eventPoint.basePrice))}" pattern="[1-9][0-9]*" required ${isDisabled ? 'disabled' : ''}>
     </div>`;
 }
 
-function createSectionOffers (eventPoint, eventOffers) {
-
+function createSectionOffers (eventPoint, eventOffers, isDisabled) {
   return `
     <section class="event__section  event__section--offers">
       <h3 class="event__section-title  event__section-title--offers">Offers</h3>
@@ -78,7 +77,7 @@ function createSectionOffers (eventPoint, eventOffers) {
       <div class="event__available-offers">
       ${eventOffers.offers.map((offers, index) => `
         <div class="event__offer-selector">
-          <input class="event__offer-checkbox  visually-hidden" id="event-offer-luggage-${index + 1}" type="checkbox" name="${offers.title}" ${(eventPoint.offers.some((item) => item === offers.id)) ? 'checked' : ''}>
+          <input class="event__offer-checkbox  visually-hidden" id="event-offer-luggage-${index + 1}" type="checkbox" name="${offers.title}" ${(eventPoint.offers.some((item) => item === offers.id)) ? 'checked' : ''} ${isDisabled ? 'disabled' : ''}>
           <label class="event__offer-label" for="event-offer-luggage-${index + 1}">
             <span class="event__offer-title">${offers.title}</span>
             &plus;&euro;&nbsp;
@@ -106,32 +105,33 @@ function createSectionDestination(eventDestination) {
     </section>`;
 }
 
-function createHeaderEditingEventTemplate (eventPoint, allOffers, allDestinations, mode) {
+function createHeaderEditingEventTemplate (eventPoint, allOffers, allDestinations, mode, isDisabled, isSaving, isDeleting) {
 
   return `
     <header class="event__header">
       <div class="event__type-wrapper">
-        ${createHeaderEventTypeList(eventPoint, allOffers)}
+        ${createHeaderEventTypeList(eventPoint, allOffers, isDisabled)}
       </div>
-        ${createHeaderEventDestination(eventPoint, allDestinations)}
-        ${createHeaderEventTime(eventPoint)}
-        ${createHeaderEventPrice(eventPoint)}
-      <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-      <button class="event__reset-btn" type="reset">Delete</button>
-      ${mode === Mode.EDITING ? '<button class="event__rollup-btn" type="button">' : ''}
+        ${createHeaderEventDestination(eventPoint, allDestinations, isDisabled)}
+        ${createHeaderEventTime(eventPoint, isDisabled)}
+        ${createHeaderEventPrice(eventPoint, isDisabled)}
+      <button class="event__save-btn  btn  btn--blue" type="submit">${isSaving ? 'Saving...' : 'Save'}</button>
+      ${mode === Mode.ADDITION ? `<button class="event__reset-btn" type="reset">${isDeleting ? 'Canceling...' : 'Cancel'}</button>` :
+    `<button class="event__reset-btn" type="reset">${isDeleting ? 'Deleting...' : 'Delete'}</button>`}
+      ${mode === Mode.EDITING ? `<button class="event__rollup-btn" type="button" ${isDisabled ? 'disabled' : ''}>` : ''}
         <span class="visually-hidden">Open event</span>
       </button>
     </header>`;
 }
 
-function createSectionEditingEventTemplate (eventPoint, allOffers, allDestinations) {
+function createSectionEditingEventTemplate (eventPoint, allOffers, allDestinations, isDisabled) {
   const eventOffers = allOffers.find((element)=> element.type === eventPoint.type);
   const eventDestination = allDestinations.find((element)=> element.id === eventPoint.destination);
 
   if (eventOffers.offers.length !== 0 || (eventDestination !== undefined && (eventDestination?.description || eventDestination?.pictures.length !== 0))) {
     return `
     <section class="event__details">
-      ${eventOffers.offers.length !== 0 ? createSectionOffers(eventPoint, eventOffers) : ''}
+      ${eventOffers.offers.length !== 0 ? createSectionOffers(eventPoint, eventOffers, isDisabled) : ''}
       ${(eventDestination?.description || eventDestination?.pictures.length !== 0) && eventPoint.destination ? createSectionDestination(eventDestination) : '' }
     </section>`;
   } else {
@@ -140,9 +140,10 @@ function createSectionEditingEventTemplate (eventPoint, allOffers, allDestinatio
 }
 
 function createEditingEventTemplate({eventPoint, allOffers, allDestinations, mode}) {
+  const {isDisabled, isSaving, isDeleting} = eventPoint;
 
-  const headerEditingEventTemplate = createHeaderEditingEventTemplate(eventPoint, allOffers, allDestinations, mode);
-  const SectionEditingEventTemplate = createSectionEditingEventTemplate(eventPoint, allOffers, allDestinations);
+  const headerEditingEventTemplate = createHeaderEditingEventTemplate(eventPoint, allOffers, allDestinations, mode, isDisabled, isSaving, isDeleting);
+  const SectionEditingEventTemplate = createSectionEditingEventTemplate(eventPoint, allOffers, allDestinations, isDisabled);
 
   return `<li class="trip-events__item">
   <form class="event event--edit" action="#" method="post">
@@ -306,16 +307,20 @@ export default class EditingEventView extends AbstractStatefulView {
   static parsePointToState(eventPoint) {
 
     return {...eventPoint,
-      type: eventPoint.type,
-      destination: eventPoint.destination,
-      basePrice: eventPoint.basePrice,
-      offers: eventPoint.offers,
+      isDisabled: false,
+      isSaving: false,
+      isDeleting: false,
     };
   }
 
   static parseStateToPoint(state) {
+    const point = {...state};
 
-    return {...state};
+    delete point.isDisabled;
+    delete point.isSaving;
+    delete point.isDeleting;
+
+    return point;
   }
 
   #getDestinationById(destinationId) {

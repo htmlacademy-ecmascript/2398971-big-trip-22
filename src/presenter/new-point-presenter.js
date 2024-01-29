@@ -1,8 +1,6 @@
 import {remove, render, RenderPosition} from '../framework/render.js';
 import EditingEventView from '../view/event-editing-view.js';
-import {nanoid} from 'nanoid';
 import {UserAction, UpdateType, Mode} from '../const.js';
-import dayjs from 'dayjs';
 
 export default class NewPointPresenter {
   #pointListContainer = null;
@@ -23,9 +21,9 @@ export default class NewPointPresenter {
     this.#handleDestroy = onDestroy;
 
     this.#eventPoint = {
-      basePrice: 0,
-      dateFrom: dayjs().$d,
-      dateTo: dayjs().$d,
+      basePrice: '',
+      dateFrom: '',
+      dateTo: '',
       destination: '',
       isFavorite: false,
       offers: [],
@@ -65,15 +63,31 @@ export default class NewPointPresenter {
     document.removeEventListener('keydown', this.#escKeyDownHandler);
   }
 
+  setSaving() {
+    this.#pointEditComponent.updateElement({
+      isDisabled: true,
+      isSaving: true,
+    });
+  }
+
+  setAborting() {
+    const resetFormState = () => {
+      this.#pointEditComponent.updateElement({
+        isDisabled: false,
+        isSaving: false,
+        isDeleting: false,
+      });
+    };
+
+    this.#pointEditComponent.shake(resetFormState);
+  }
+
   #handleFormSubmit = (point) => {
     this.#handleDataChange(
       UserAction.ADD_POINT,
       UpdateType.MINOR,
-      // Пока у нас нет сервера, который бы после сохранения
-      // выдывал честный id задачи, нам нужно позаботиться об этом самим
-      {id: nanoid(), ...point},
+      point,
     );
-    this.destroy();
   };
 
   #handleDeleteClick = () => {

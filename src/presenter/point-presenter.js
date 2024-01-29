@@ -61,7 +61,8 @@ export default class PointPresenter {
     }
 
     if (this.#mode === Mode.EDITING || Mode.ADDITION) {
-      replace(this.#eventEditComponent, prevPointEditComponent);
+      replace(this.#eventPointComponent, prevPointEditComponent);
+      this.#mode = Mode.DEFAULT;
     }
 
     remove(prevPointComponent);
@@ -80,6 +81,24 @@ export default class PointPresenter {
     }
   }
 
+  setSaving() {
+    if (this.#mode === Mode.EDITING) {
+      this.#eventEditComponent.updateElement({
+        isDisabled: true,
+        isSaving: true,
+      });
+    }
+  }
+
+  setDeleting() {
+    if (this.#mode === Mode.EDITING) {
+      this.#eventEditComponent.updateElement({
+        isDisabled: true,
+        isDeleting: true,
+      });
+    }
+  }
+
   #escKeyDownHandler = (evt) => {
     if (evt.key === 'Escape') {
       evt.preventDefault();
@@ -87,6 +106,23 @@ export default class PointPresenter {
       this.#replaceFormToPoint();
     }
   };
+
+  setAborting() {
+    if (this.#mode === Mode.DEFAULT) {
+      this.#eventPointComponent.shake();
+      return;
+    }
+
+    const resetFormState = () => {
+      this.#eventEditComponent.updateElement({
+        isDisabled: false,
+        isSaving: false,
+        isDeleting: false,
+      });
+    };
+
+    this.#eventEditComponent.shake(resetFormState);
+  }
 
   #replacePointToForm() {
     replace(this.#eventEditComponent, this.#eventPointComponent);
@@ -126,7 +162,6 @@ export default class PointPresenter {
       isMinorUpdate (update, this.#eventPoint) ? UpdateType.MINOR : UpdateType.PATCH,
       update,
     );
-    this.#replaceFormToPoint();
     document.removeEventListener('keydown', this.#escKeyDownHandler);
   };
 
