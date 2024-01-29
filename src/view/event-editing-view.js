@@ -65,7 +65,7 @@ function createHeaderEventPrice (eventPoint, isDisabled) {
         <span class="visually-hidden">Price</span>
         &euro;
       </label>
-      <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${he.encode(String(eventPoint.basePrice))}" pattern="[0-9]*" required ${isDisabled ? 'disabled' : ''}>
+      <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${he.encode(String(eventPoint.basePrice))}" pattern="[1-9][0-9]*" required ${isDisabled ? 'disabled' : ''}>
     </div>`;
 }
 
@@ -116,7 +116,8 @@ function createHeaderEditingEventTemplate (eventPoint, allOffers, allDestination
         ${createHeaderEventTime(eventPoint, isDisabled)}
         ${createHeaderEventPrice(eventPoint, isDisabled)}
       <button class="event__save-btn  btn  btn--blue" type="submit">${isSaving ? 'Saving...' : 'Save'}</button>
-      <button class="event__reset-btn" type="reset">${isDeleting ? 'Deleting...' : 'Delete'}</button>
+      ${mode === Mode.ADDITION ? `<button class="event__reset-btn" type="reset">${isDeleting ? 'Canceling...' : 'Cancel'}</button>` :
+    `<button class="event__reset-btn" type="reset">${isDeleting ? 'Deleting...' : 'Delete'}</button>`}
       ${mode === Mode.EDITING ? `<button class="event__rollup-btn" type="button" ${isDisabled ? 'disabled' : ''}>` : ''}
         <span class="visually-hidden">Open event</span>
       </button>

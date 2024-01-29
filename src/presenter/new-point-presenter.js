@@ -1,7 +1,6 @@
 import {remove, render, RenderPosition} from '../framework/render.js';
 import EditingEventView from '../view/event-editing-view.js';
 import {UserAction, UpdateType, Mode} from '../const.js';
-import dayjs from 'dayjs';
 
 export default class NewPointPresenter {
   #pointListContainer = null;
@@ -22,9 +21,9 @@ export default class NewPointPresenter {
     this.#handleDestroy = onDestroy;
 
     this.#eventPoint = {
-      basePrice: 0,
-      dateFrom: dayjs().$d,
-      dateTo: dayjs().$d,
+      basePrice: '',
+      dateFrom: '',
+      dateTo: '',
       destination: '',
       isFavorite: false,
       offers: [],
