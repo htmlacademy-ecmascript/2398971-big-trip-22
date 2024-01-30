@@ -20,13 +20,15 @@ function createTripInfoTemplate(destinationText, durationText, priceText) {
 export default class TripInfoView extends AbstractView {
   #eventPoint = null;
   #allDestinations = null;
+  #allOffers = null;
   #destinationText = null;
   #durationText = null;
   #priceText = null;
 
-  constructor({eventPoint, allDestinations}) {
+  constructor({eventPoint, allOffers, allDestinations}) {
     super();
     this.#eventPoint = eventPoint;
+    this.#allOffers = allOffers;
     this.#allDestinations = allDestinations;
     this.#destinationText = this.#getDestinationText();
     this.#durationText = this.#getDurationText();
@@ -78,7 +80,16 @@ export default class TripInfoView extends AbstractView {
   }
 
   #getPriceText () {
+    let price = 0;
 
-    return this.#eventPoint.reduce((a, b) => a + Number(b.basePrice), 0);
+    this.#eventPoint.forEach((point) => {
+      const eventOffers = this.#allOffers.find((element)=> element.type === point.type);
+      const eventCheckedOffers = eventOffers.offers.filter((element) => point.offers.find((item) => item === element.id));
+      price += eventCheckedOffers.reduce((a, b) => a + Number(b.price), 0);
+    });
+
+    price += this.#eventPoint.reduce((a, b) => a + Number(b.basePrice), 0);
+
+    return price;
   }
 }

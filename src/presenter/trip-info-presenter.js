@@ -5,18 +5,20 @@ export default class TripInfoPresenter {
   #tripInfoComponent = null;
   #siteTripMainElement = null;
   #eventPoint = null;
+  #allOffers = null;
   #allDestinations = null;
 
-  constructor({siteTripMainElement, eventPoint, allDestinations}) {
+  constructor({siteTripMainElement, eventPoint, allOffers, allDestinations}) {
     this.#siteTripMainElement = siteTripMainElement;
     this.#eventPoint = eventPoint;
+    this.#allOffers = allOffers;
     this.#allDestinations = allDestinations;
   }
 
   init() {
-
     this.#tripInfoComponent = new TripInfoView({
       eventPoint: this.#eventPoint,
+      allOffers: this.#allOffers,
       allDestinations: this.#allDestinations,
     });
 
@@ -29,5 +31,4 @@ export default class TripInfoPresenter {
     }
     remove(this.#tripInfoComponent);
   }
-
 }
