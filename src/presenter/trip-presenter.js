@@ -201,7 +201,8 @@ export default class TripPresenter {
     this.#tripInfoComponent = new TripInfoPresenter({
       siteTripMainElement: siteTripMainElement,
       eventPoint: this.#pointsModel.points.sort(sortPointDay),
-      allDestinations: this.#allDestinations
+      allOffers: this.#allOffers,
+      allDestinations: this.#allDestinations,
     });
     this.#tripInfoComponent.init();
   }
