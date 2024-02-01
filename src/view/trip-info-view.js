@@ -1,6 +1,6 @@
 import AbstractView from '../framework/view/abstract-view.js';
 import { DATE_FORMAT } from '../const.js';
-import { humanizeTaskDueDate } from '../utils/point.js';
+import { humanizePointDate } from '../utils/point.js';
 
 function createTripInfoTemplate(destinationText, durationText, priceText) {
 
@@ -80,10 +80,10 @@ export default class TripInfoView extends AbstractView {
     const dateEnd = this.#eventPoint[this.#eventPoint.length - 1].dateTo;
 
     switch (true) {
-      case humanizeTaskDueDate(dateStart, DATE_FORMAT.month) === humanizeTaskDueDate(dateEnd, DATE_FORMAT.month) && this.#eventPoint.length !== 1:
-        return `${humanizeTaskDueDate(dateStart, DATE_FORMAT.day)}&nbsp;&mdash;&nbsp;${humanizeTaskDueDate(dateEnd, DATE_FORMAT.datMonth)}`;
+      case humanizePointDate(dateStart, DATE_FORMAT.month) === humanizePointDate(dateEnd, DATE_FORMAT.month) && this.#eventPoint.length !== 1:
+        return `${humanizePointDate(dateStart, DATE_FORMAT.day)}&nbsp;&mdash;&nbsp;${humanizePointDate(dateEnd, DATE_FORMAT.datMonth)}`;
       default:
-        return `${humanizeTaskDueDate(dateStart, DATE_FORMAT.datMonth)}&nbsp;&mdash;&nbsp;${humanizeTaskDueDate(dateEnd, DATE_FORMAT.datMonth)}`;
+        return `${humanizePointDate(dateStart, DATE_FORMAT.datMonth)}&nbsp;&mdash;&nbsp;${humanizePointDate(dateEnd, DATE_FORMAT.datMonth)}`;
     }
   }
 

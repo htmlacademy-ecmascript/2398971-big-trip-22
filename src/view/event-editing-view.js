@@ -1,5 +1,5 @@
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
-import { humanizeTaskDueDate } from '../utils/point.js';
+import { humanizePointDate } from '../utils/point.js';
 import { DATE_FORMAT, Mode} from '../const.js';
 import flatpickr from 'flatpickr';
 import he from 'he';
@@ -50,10 +50,10 @@ function createHeaderEventTime (eventPoint, isDisabled) {
   return `
     <div class="event__field-group  event__field-group--time">
       <label class="visually-hidden" for="event-start-time-1">From</label>
-      <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${humanizeTaskDueDate(eventPoint.dateFrom,DATE_FORMAT.fullDate)}" ${isDisabled ? 'disabled' : ''}>
+      <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${humanizePointDate(eventPoint.dateFrom,DATE_FORMAT.fullDate)}" ${isDisabled ? 'disabled' : ''}>
       &mdash;
       <label class="visually-hidden" for="event-end-time-1">To</label>
-      <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${humanizeTaskDueDate(eventPoint.dateTo,DATE_FORMAT.fullDate)}" ${isDisabled ? 'disabled' : ''}>
+      <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${humanizePointDate(eventPoint.dateTo,DATE_FORMAT.fullDate)}" ${isDisabled ? 'disabled' : ''}>
     </div>`;
 }
 

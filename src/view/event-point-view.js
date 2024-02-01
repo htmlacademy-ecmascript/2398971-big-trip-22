@@ -1,5 +1,5 @@
 import AbstractView from '../framework/view/abstract-view.js';
-import { humanizeTaskDueDate, returnDateDurationFormat } from '../utils/point.js';
+import { humanizePointDate, returnDateDurationFormat } from '../utils/point.js';
 import { DATE_FORMAT } from '../const.js';
 
 function createSelectedOffersTemplate(selectedOffers) {
@@ -29,9 +29,9 @@ function createEventSchedule (dateFrom, dateTo) {
   return `
   <div class="event__schedule">
   <p class="event__time">
-    <time class="event__start-time" datetime="2019-03-18T10:30">${humanizeTaskDueDate(dateFrom,DATE_FORMAT.time)}</time>
+    <time class="event__start-time" datetime="2019-03-18T10:30">${humanizePointDate(dateFrom,DATE_FORMAT.time)}</time>
     &mdash;
-    <time class="event__end-time" datetime="2019-03-18T11:00">${humanizeTaskDueDate(dateTo,DATE_FORMAT.time)}</time>
+    <time class="event__end-time" datetime="2019-03-18T11:00">${humanizePointDate(dateTo,DATE_FORMAT.time)}</time>
   </p>
   <p class="event__duration">${returnDateDurationFormat (dateFrom, dateTo)}M</p>
 </div>`;
@@ -47,7 +47,7 @@ function createPointTemplate({eventPoint, allOffers, allDestinations,}) {
   const selectedOffersTemplate = createSelectedOffersTemplate(eventCheckedOffers);
   const FavoriteTemplate = createFavoriteTemplate(isFavorite);
   const destinationTemplate = eventDestination.name;
-  const datePoint = humanizeTaskDueDate(dateFrom,DATE_FORMAT.monthDat);
+  const datePoint = humanizePointDate(dateFrom,DATE_FORMAT.monthDat);
 
   return `<li class="trip-events__item">
     <div class="event">
