@@ -63,8 +63,10 @@ function handleNewPointButtonClick (evt) {
 
 filterPresenter.init();
 tripPresenter.init();
+
 await pointsModel.init()
   .finally(() => {
     newPointButtonElement.removeAttribute('disabled');
     newPointButtonElement.addEventListener('click', handleNewPointButtonClick);
   });
+

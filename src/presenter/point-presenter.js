@@ -82,6 +82,7 @@ export default class PointPresenter {
   }
 
   setSaving() {
+    document.removeEventListener('keydown', this.#escKeyDownHandler);
     if (this.#mode === Mode.EDITING) {
       this.#eventEditComponent.updateElement({
         isDisabled: true,
@@ -91,6 +92,7 @@ export default class PointPresenter {
   }
 
   setDeleting() {
+    document.removeEventListener('keydown', this.#escKeyDownHandler);
     if (this.#mode === Mode.EDITING) {
       this.#eventEditComponent.updateElement({
         isDisabled: true,

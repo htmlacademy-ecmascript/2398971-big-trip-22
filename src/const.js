@@ -17,6 +17,7 @@ const DESCRIPTIONS = [
 
 const DATE_FORMAT = {
   datMonth: 'D MMM',
+  monthDat: 'MMM D',
   minute: 'mm',
   month: 'MM',
   day: 'DD',
@@ -36,6 +37,11 @@ const MILISECONDS = {
   oneDay:86400000
 };
 
+const MINUTES = {
+  oneHour: 60,
+  oneDay:1440,
+};
+
 const POINT_MAX_PRICE = 1000;
 const POINTS__MAX_COUNT = 10;
 const PICTURE_MAX = 5;
@@ -51,9 +57,9 @@ const NoPointMassages = {
 
 const FilterType = {
   EVERYTHING: 'everything',
-  PAST: 'past',
+  FUTURE: 'future',
   PRESENT: 'present',
-  FUTURE: 'future'
+  PAST: 'past',
 };
 
 const SortType = {
@@ -83,6 +89,11 @@ const Mode = {
   ADDITION: 'ADDITION',
 };
 
+const TimeLimit = {
+  LOWER_LIMIT: 350,
+  UPPER_LIMIT: 1000,
+};
+
 export {
   POINT_TYPES,
   DESTINATIONS,
@@ -91,6 +102,7 @@ export {
   DATE_FORMAT,
   DURATIONS,
   MILISECONDS,
+  MINUTES,
   POINT_MAX_PRICE,
   POINTS__MAX_COUNT,
   PICTURE_MAX,
@@ -100,6 +112,7 @@ export {
   UserAction,
   UpdateType,
   Mode,
+  TimeLimit,
 };
 
 

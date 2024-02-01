@@ -21,7 +21,7 @@ export default class NewPointPresenter {
     this.#handleDestroy = onDestroy;
 
     this.#eventPoint = {
-      basePrice: '',
+      basePrice: 0,
       dateFrom: '',
       dateTo: '',
       destination: '',

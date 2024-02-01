@@ -47,7 +47,7 @@ function createPointTemplate({eventPoint, allOffers, allDestinations,}) {
   const selectedOffersTemplate = createSelectedOffersTemplate(eventCheckedOffers);
   const FavoriteTemplate = createFavoriteTemplate(isFavorite);
   const destinationTemplate = eventDestination.name;
-  const datePoint = humanizeTaskDueDate(dateFrom,DATE_FORMAT.datMonth);
+  const datePoint = humanizeTaskDueDate(dateFrom,DATE_FORMAT.monthDat);
 
   return `<li class="trip-events__item">
     <div class="event">
