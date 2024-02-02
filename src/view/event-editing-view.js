@@ -1,5 +1,5 @@
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
-import { humanizeTaskDueDate } from '../utils/point.js';
+import { humanizePointDate } from '../utils/point.js';
 import { DATE_FORMAT, Mode} from '../const.js';
 import flatpickr from 'flatpickr';
 import he from 'he';
@@ -50,10 +50,10 @@ function createHeaderEventTime (eventPoint, isDisabled) {
   return `
     <div class="event__field-group  event__field-group--time">
       <label class="visually-hidden" for="event-start-time-1">From</label>
-      <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${humanizeTaskDueDate(eventPoint.dateFrom,DATE_FORMAT.fullDate)}" ${isDisabled ? 'disabled' : ''}>
+      <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${humanizePointDate(eventPoint.dateFrom,DATE_FORMAT.fullDate)}" ${isDisabled ? 'disabled' : ''}>
       &mdash;
       <label class="visually-hidden" for="event-end-time-1">To</label>
-      <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${humanizeTaskDueDate(eventPoint.dateTo,DATE_FORMAT.fullDate)}" ${isDisabled ? 'disabled' : ''}>
+      <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${humanizePointDate(eventPoint.dateTo,DATE_FORMAT.fullDate)}" ${isDisabled ? 'disabled' : ''}>
     </div>`;
 }
 
@@ -106,7 +106,6 @@ function createSectionDestination(eventDestination) {
 }
 
 function createHeaderEditingEventTemplate (eventPoint, allOffers, allDestinations, mode, isDisabled, isSaving, isDeleting) {
-
   return `
     <header class="event__header">
       <div class="event__type-wrapper">
@@ -118,7 +117,7 @@ function createHeaderEditingEventTemplate (eventPoint, allOffers, allDestination
       <button class="event__save-btn  btn  btn--blue" type="submit">${isSaving ? 'Saving...' : 'Save'}</button>
       ${mode === Mode.ADDITION ? `<button class="event__reset-btn" type="reset">${isDeleting ? 'Canceling...' : 'Cancel'}</button>` :
     `<button class="event__reset-btn" type="reset">${isDeleting ? 'Deleting...' : 'Delete'}</button>`}
-      ${mode === Mode.EDITING ? `<button class="event__rollup-btn" type="button" ${isDisabled ? 'disabled' : ''}>` : ''}
+      ${mode === Mode.EDITING ? '<button class="event__rollup-btn" type="button">' : ''}
         <span class="visually-hidden">Open event</span>
       </button>
     </header>`;
@@ -159,7 +158,8 @@ export default class EditingEventView extends AbstractStatefulView {
   #handleEditClick = null;
   #handleFormSubmit = null;
   #handleDeleteClick = null;
-  #datepicker = null;
+  #datepickerFrom = null;
+  #datepickerTo = null;
   #mode = null;
 
   constructor({eventPoint, allOffers, allDestinations, onEditClick, onFormSubmit, onDeleteClick, mode}) {
@@ -189,9 +189,14 @@ export default class EditingEventView extends AbstractStatefulView {
   removeElement() {
     super.removeElement();
 
-    if (this.#datepicker) {
-      this.#datepicker.destroy();
-      this.#datepicker = null;
+    if (this.#datepickerFrom) {
+      this.#datepickerFrom.destroy();
+      this.#datepickerFrom = null;
+    }
+
+    if (this.#datepickerTo) {
+      this.#datepickerTo.destroy();
+      this.#datepickerTo = null;
     }
   }
 
@@ -274,7 +279,7 @@ export default class EditingEventView extends AbstractStatefulView {
 
   #setDatepicker() {
 
-    this.#datepicker = flatpickr(
+    this.#datepickerFrom = flatpickr(
       this.element.querySelector('[name="event-start-time"]'),
       {
         dateFormat: 'd/m/y H:i',
@@ -286,7 +291,7 @@ export default class EditingEventView extends AbstractStatefulView {
       },
     );
 
-    this.#datepicker = flatpickr(
+    this.#datepickerTo = flatpickr(
       this.element.querySelector('[name="event-end-time"]'),
       {
         dateFormat: 'd/m/y H:i',

@@ -1,6 +1,6 @@
 import AbstractView from '../framework/view/abstract-view.js';
 import { DATE_FORMAT } from '../const.js';
-import { humanizeTaskDueDate } from '../utils/point.js';
+import { humanizePointDate } from '../utils/point.js';
 
 function createTripInfoTemplate(destinationText, durationText, priceText) {
 
@@ -65,17 +65,25 @@ export default class TripInfoView extends AbstractView {
     const middlePoints = distance.slice(1,-1);
     const endPoint = fullDistance[fullDistance.length - 1];
 
-    return `${startPoint} &mdash; ${middlePoints.length !== 1 ? '...' : middlePoints[0] } &mdash; ${endPoint}`;
+    switch (middlePoints.length) {
+      case 0:
+        return `${startPoint} &mdash; ${endPoint}`;
+      case 1:
+        return `${startPoint} &mdash; ${middlePoints[0]} &mdash; ${endPoint}`;
+      default:
+        return `${startPoint} &mdash; ${'...'} &mdash; ${endPoint}`;
+    }
   }
 
   #getDurationText () {
-    const dateStart = this.#eventPoint[this.#eventPoint.length - 1].dateFrom;
-    const dateEnd = this.#eventPoint[0].dateTo;
+    const dateStart = this.#eventPoint[0].dateFrom;
+    const dateEnd = this.#eventPoint[this.#eventPoint.length - 1].dateTo;
 
-    if (humanizeTaskDueDate(dateStart, DATE_FORMAT.month) === humanizeTaskDueDate(dateEnd, DATE_FORMAT.month)) {
-      return `${humanizeTaskDueDate(dateStart, DATE_FORMAT.day)}&nbsp;&mdash;&nbsp;${humanizeTaskDueDate(dateEnd, DATE_FORMAT.datMonth)}`;
-    } else {
-      return `${humanizeTaskDueDate(dateStart, DATE_FORMAT.datMonth)}&nbsp;&mdash;&nbsp;${humanizeTaskDueDate(dateEnd, DATE_FORMAT.datMonth)}`;
+    switch (true) {
+      case humanizePointDate(dateStart, DATE_FORMAT.month) === humanizePointDate(dateEnd, DATE_FORMAT.month) && this.#eventPoint.length !== 1:
+        return `${humanizePointDate(dateStart, DATE_FORMAT.day)}&nbsp;&mdash;&nbsp;${humanizePointDate(dateEnd, DATE_FORMAT.datMonth)}`;
+      default:
+        return `${humanizePointDate(dateStart, DATE_FORMAT.datMonth)}&nbsp;&mdash;&nbsp;${humanizePointDate(dateEnd, DATE_FORMAT.datMonth)}`;
     }
   }
 
