@@ -66,7 +66,9 @@ tripPresenter.init();
 
 await pointsModel.init()
   .finally(() => {
-    newPointButtonElement.removeAttribute('disabled');
+    if (pointsModel.points.length !== 0) {
+      newPointButtonElement.removeAttribute('disabled');
+    }
     newPointButtonElement.addEventListener('click', buttonNewPointClickHandle);
   });
 
