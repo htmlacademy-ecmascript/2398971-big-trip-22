@@ -210,23 +210,23 @@ export default class EventEditingView extends AbstractStatefulView {
     const availableOffers = this.element.querySelector('.event__available-offers');
 
     this.element.querySelector('form').addEventListener('submit', this.#formSubmitHandler);
-    this.element.querySelector('.event__type-list').addEventListener('change', this.#eventTypeToggleHandler);
-    this.element.querySelector('.event__input--destination').addEventListener('change', this.#eventDestinationToggleHandler);
-    this.element.querySelector('.event__input--price').addEventListener('change', this.#eventPriceToggleHandler);
+    this.element.querySelector('.event__type-list').addEventListener('change', this.#inputTypeToggleHandler);
+    this.element.querySelector('.event__input--destination').addEventListener('change', this.#inputDestinationToggleHandler);
+    this.element.querySelector('.event__input--price').addEventListener('change', this.#inputPriceToggleHandler);
     this.element.querySelector('.event__reset-btn').addEventListener('click', this.#formDeleteClickHandler);
 
     if (availableOffers !== null) {
-      availableOffers.addEventListener('change', this.#eventoffersToggleHandler);
+      availableOffers.addEventListener('change', this.#inputOffersToggleHandler);
     }
 
     if(this.#mode === Mode.EDITING) {
-      this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#closeEditClickHandler);
+      this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#closeButtonEditClickHandler);
     }
 
     this.#setDatepicker();
   }
 
-  #closeEditClickHandler = (evt) => {
+  #closeButtonEditClickHandler = (evt) => {
     evt.preventDefault();
     this.#handleEditClick();
   };
@@ -236,7 +236,7 @@ export default class EventEditingView extends AbstractStatefulView {
     this.#handleFormSubmit(EventEditingView.parseStateToPoint(this._state));
   };
 
-  #eventTypeToggleHandler = (evt) => {
+  #inputTypeToggleHandler = (evt) => {
     evt.preventDefault();
     this.updateElement({
       type: evt.target.value,
@@ -244,34 +244,34 @@ export default class EventEditingView extends AbstractStatefulView {
     });
   };
 
-  #eventDestinationToggleHandler = (evt) => {
+  #inputDestinationToggleHandler = (evt) => {
     evt.preventDefault();
     this.updateElement({
       destination: this.#getDestinationById(evt.target.value).id,
     });
   };
 
-  #eventPriceToggleHandler = (evt) => {
+  #inputPriceToggleHandler = (evt) => {
     evt.preventDefault();
     this._setState({
       basePrice: evt.target.value,
     });
   };
 
-  #eventoffersToggleHandler = (evt) => {
+  #inputOffersToggleHandler = (evt) => {
     evt.preventDefault();
     this.updateElement({
       offers: this.#getCheckedOfferIdByName(this._state),
     });
   };
 
-  #dateFromChangeHandler = ([date]) => {
+  #inputDateFromChangeHandler = ([date]) => {
     this.updateElement({
       dateFrom: date,
     });
   };
 
-  #dateToChangeHandler = ([date]) => {
+  #inputDateToChangeHandler = ([date]) => {
     this.updateElement({
       dateTo: date,
     });
@@ -284,7 +284,7 @@ export default class EventEditingView extends AbstractStatefulView {
       {
         dateFormat: 'd/m/y H:i',
         defaultDate: this._state.dateFrom,
-        onClose: this.#dateFromChangeHandler,
+        onClose: this.#inputDateFromChangeHandler,
         maxDate: this._state.dateTo,
         enableTime: true,
         'time_24hr': true,
@@ -296,7 +296,7 @@ export default class EventEditingView extends AbstractStatefulView {
       {
         dateFormat: 'd/m/y H:i',
         defaultDate: this._state.dateTo,
-        onClose: this.#dateToChangeHandler,
+        onClose: this.#inputDateToChangeHandler,
         minDate: this._state.dateFrom,
         enableTime: true,
         'time_24hr': true,
