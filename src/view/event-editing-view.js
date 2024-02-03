@@ -152,7 +152,7 @@ function createEditingEventTemplate({eventPoint, allOffers, allDestinations, mod
 </li>`;
 }
 
-export default class EditingEventView extends AbstractStatefulView {
+export default class EventEditingView extends AbstractStatefulView {
   #allOffers = null;
   #allDestinations = null;
   #handleEditClick = null;
@@ -164,7 +164,7 @@ export default class EditingEventView extends AbstractStatefulView {
 
   constructor({eventPoint, allOffers, allDestinations, onEditClick, onFormSubmit, onDeleteClick, mode}) {
     super();
-    this._setState(EditingEventView.parsePointToState(eventPoint));
+    this._setState(EventEditingView.parsePointToState(eventPoint));
     this.#allOffers = allOffers;
     this.#allDestinations = allDestinations;
     this.#handleFormSubmit = onFormSubmit;
@@ -202,7 +202,7 @@ export default class EditingEventView extends AbstractStatefulView {
 
   reset(eventPoint) {
     this.updateElement(
-      EditingEventView.parsePointToState(eventPoint),
+      EventEditingView.parsePointToState(eventPoint),
     );
   }
 
@@ -233,7 +233,7 @@ export default class EditingEventView extends AbstractStatefulView {
 
   #formSubmitHandler = (evt) => {
     evt.preventDefault();
-    this.#handleFormSubmit(EditingEventView.parseStateToPoint(this._state));
+    this.#handleFormSubmit(EventEditingView.parseStateToPoint(this._state));
   };
 
   #eventTypeToggleHandler = (evt) => {
@@ -306,7 +306,7 @@ export default class EditingEventView extends AbstractStatefulView {
 
   #formDeleteClickHandler = (evt) => {
     evt.preventDefault();
-    this.#handleDeleteClick(EditingEventView.parseStateToPoint(this._state));
+    this.#handleDeleteClick(EventEditingView.parseStateToPoint(this._state));
   };
 
   static parsePointToState(eventPoint) {

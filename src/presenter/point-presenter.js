@@ -1,6 +1,6 @@
 import { render, replace, remove } from '../framework/render.js';
 import EventPointView from '../view/event-point-view.js';
-import EditingEventView from '../view/event-editing-view.js';
+import EventEditingView from '../view/event-editing-view.js';
 import { UserAction, UpdateType, Mode } from '../const.js';
 import { isMinorUpdate } from '../utils/point.js';
 
@@ -41,7 +41,7 @@ export default class PointPresenter {
       onFavoriteClick: this.#handleFavoriteClick,
     });
 
-    this.#eventEditComponent = new EditingEventView({
+    this.#eventEditComponent = new EventEditingView({
       eventPoint: this.#eventPoint,
       allOffers: this.#allOffers,
       allDestinations: this.#allDestinations,

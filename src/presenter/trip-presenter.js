@@ -1,6 +1,6 @@
 import { render, remove, RenderPosition } from '../framework/render.js';
 import UiBlocker from '../framework/ui-blocker/ui-blocker.js';
-import EventPointListView from '../view/event-list-view.js';
+import EventListView from '../view/event-list-view.js';
 import SortingView from '../view/sorting-view.js';
 import NoPointView from '../view/no-point-view.js';
 import LoadingView from '../view/loading-view.js';
@@ -26,7 +26,7 @@ export default class TripPresenter {
   #noPointComponent = null;
   #tripInfoComponent = null;
 
-  #eventListComponent = new EventPointListView();
+  #eventListComponent = new EventListView();
   #loadingSuccessComponent = new LoadingView({isLoadSuccess: true});
   #loadingFailComponent = new LoadingView({isLoadSuccess: false});
 
