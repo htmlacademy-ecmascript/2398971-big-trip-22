@@ -93,10 +93,10 @@ export default class TripInfoView extends AbstractView {
     this.#eventPoints.forEach((point) => {
       const eventOffers = this.#allOffers.find((element)=> element.type === point.type);
       const eventCheckedOffers = eventOffers.offers.filter((element) => point.offers.find((item) => item === element.id));
-      price += eventCheckedOffers.reduce((a, b) => a + Number(b.price), 0);
+      price += eventCheckedOffers.reduce((offerA, offerB) => offerA + Number(offerB.price), 0);
     });
 
-    price += this.#eventPoints.reduce((a, b) => a + Number(b.basePrice), 0);
+    price += this.#eventPoints.reduce((pointA, pointB) => pointA + Number(pointB.basePrice), 0);
 
     return price;
   }
