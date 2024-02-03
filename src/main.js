@@ -47,15 +47,15 @@ const tripPresenter = new TripPresenter({
   offersModel,
   destinationsModel,
   filterModel,
-  onNewPointDestroy: handleNewPointFormClose,
+  onNewPointDestroy: closeFormNewPointClickHandle,
 });
 
-function handleNewPointFormClose() {
+function closeFormNewPointClickHandle() {
   tripPresenter.renderNoPoints();
   newPointButtonElement.removeAttribute('disabled');
 }
 
-function handleNewPointButtonClick (evt) {
+function buttonNewPointClickHandle (evt) {
   evt.preventDefault();
   tripPresenter.createPoint();
   newPointButtonElement.setAttribute('disabled', 'disabled');
@@ -66,7 +66,9 @@ tripPresenter.init();
 
 await pointsModel.init()
   .finally(() => {
-    newPointButtonElement.removeAttribute('disabled');
-    newPointButtonElement.addEventListener('click', handleNewPointButtonClick);
+    if (pointsModel.points.length !== 0) {
+      newPointButtonElement.removeAttribute('disabled');
+    }
+    newPointButtonElement.addEventListener('click', buttonNewPointClickHandle);
   });
 

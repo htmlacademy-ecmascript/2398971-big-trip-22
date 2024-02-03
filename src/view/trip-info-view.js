@@ -18,16 +18,16 @@ function createTripInfoTemplate(destinationText, durationText, priceText) {
 }
 
 export default class TripInfoView extends AbstractView {
-  #eventPoint = null;
+  #eventPoints = null;
   #allDestinations = null;
   #allOffers = null;
   #destinationText = null;
   #durationText = null;
   #priceText = null;
 
-  constructor({eventPoint, allOffers, allDestinations}) {
+  constructor({eventPoints, allOffers, allDestinations}) {
     super();
-    this.#eventPoint = eventPoint;
+    this.#eventPoints = eventPoints;
     this.#allOffers = allOffers;
     this.#allDestinations = allDestinations;
     this.#destinationText = this.#getDestinationText();
@@ -46,24 +46,24 @@ export default class TripInfoView extends AbstractView {
   }
 
   #getDestinationText () {
-    const fullDistance = this.#eventPoint.map((element) => this.#getDestinationById(element.destination).name).reverse();
-    const distance = [];
+    const fullDistances = this.#eventPoints.map((element) => this.#getDestinationById(element.destination).name).reverse();
+    const distances = [];
     let previousPoint = null;
     let currentPoint = null;
 
-    fullDistance.forEach((point) => {
+    fullDistances.forEach((point) => {
       currentPoint = point;
 
       if (currentPoint !== previousPoint) {
-        distance.push(currentPoint);
+        distances.push(currentPoint);
       }
 
       previousPoint = point;
     });
 
-    const startPoint = fullDistance[0];
-    const middlePoints = distance.slice(1,-1);
-    const endPoint = fullDistance[fullDistance.length - 1];
+    const startPoint = fullDistances[0];
+    const middlePoints = distances.slice(1,-1);
+    const endPoint = fullDistances[fullDistances.length - 1];
 
     switch (middlePoints.length) {
       case 0:
@@ -76,11 +76,11 @@ export default class TripInfoView extends AbstractView {
   }
 
   #getDurationText () {
-    const dateStart = this.#eventPoint[0].dateFrom;
-    const dateEnd = this.#eventPoint[this.#eventPoint.length - 1].dateTo;
+    const dateStart = this.#eventPoints[0].dateFrom;
+    const dateEnd = this.#eventPoints[this.#eventPoints.length - 1].dateTo;
 
     switch (true) {
-      case humanizePointDate(dateStart, DATE_FORMAT.month) === humanizePointDate(dateEnd, DATE_FORMAT.month) && this.#eventPoint.length !== 1:
+      case humanizePointDate(dateStart, DATE_FORMAT.month) === humanizePointDate(dateEnd, DATE_FORMAT.month) && this.#eventPoints.length !== 1:
         return `${humanizePointDate(dateStart, DATE_FORMAT.day)}&nbsp;&mdash;&nbsp;${humanizePointDate(dateEnd, DATE_FORMAT.datMonth)}`;
       default:
         return `${humanizePointDate(dateStart, DATE_FORMAT.datMonth)}&nbsp;&mdash;&nbsp;${humanizePointDate(dateEnd, DATE_FORMAT.datMonth)}`;
@@ -90,13 +90,13 @@ export default class TripInfoView extends AbstractView {
   #getPriceText () {
     let price = 0;
 
-    this.#eventPoint.forEach((point) => {
+    this.#eventPoints.forEach((point) => {
       const eventOffers = this.#allOffers.find((element)=> element.type === point.type);
       const eventCheckedOffers = eventOffers.offers.filter((element) => point.offers.find((item) => item === element.id));
-      price += eventCheckedOffers.reduce((a, b) => a + Number(b.price), 0);
+      price += eventCheckedOffers.reduce((offerA, offerB) => offerA + Number(offerB.price), 0);
     });
 
-    price += this.#eventPoint.reduce((a, b) => a + Number(b.basePrice), 0);
+    price += this.#eventPoints.reduce((pointA, pointB) => pointA + Number(pointB.basePrice), 0);
 
     return price;
   }

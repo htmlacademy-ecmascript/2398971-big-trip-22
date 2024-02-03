@@ -1,5 +1,5 @@
 import {remove, render, RenderPosition} from '../framework/render.js';
-import EditingEventView from '../view/event-editing-view.js';
+import EventEditingView from '../view/event-editing-view.js';
 import {UserAction, UpdateType, Mode} from '../const.js';
 
 export default class NewPointPresenter {
@@ -36,7 +36,7 @@ export default class NewPointPresenter {
       return;
     }
 
-    this.#pointEditComponent = new EditingEventView({
+    this.#pointEditComponent = new EventEditingView({
       eventPoint: this.#eventPoint,
       allOffers: this.#allOffers,
       allDestinations:this.#allDestinations,

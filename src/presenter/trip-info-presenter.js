@@ -4,20 +4,20 @@ import TripInfoView from '../view/trip-info-view.js';
 export default class TripInfoPresenter {
   #tripInfoComponent = null;
   #siteTripMainElement = null;
-  #eventPoint = null;
+  #eventPoints = null;
   #allOffers = null;
   #allDestinations = null;
 
-  constructor({siteTripMainElement, eventPoint, allOffers, allDestinations}) {
+  constructor({siteTripMainElement, eventPoints, allOffers, allDestinations}) {
     this.#siteTripMainElement = siteTripMainElement;
-    this.#eventPoint = eventPoint;
+    this.#eventPoints = eventPoints;
     this.#allOffers = allOffers;
     this.#allDestinations = allDestinations;
   }
 
   init() {
     this.#tripInfoComponent = new TripInfoView({
-      eventPoint: this.#eventPoint,
+      eventPoints: this.#eventPoints,
       allOffers: this.#allOffers,
       allDestinations: this.#allDestinations,
     });
